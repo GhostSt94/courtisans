@@ -55,7 +55,7 @@
 
         <!-- Leave Button -->
         <button
-          @click="store.quitGame()"
+          @click="showQuitConfirm = true"
           class="flex items-center gap-3 group/quit cursor-pointer px-4 py-2 rounded-xl border border-red-500/10 hover:border-red-500/40 hover:bg-red-500/5 transition-all"
         >
           <span class="text-[9px] text-red-400 uppercase font-black tracking-widest group-hover:translate-x-0 translate-x-1 transition-all">Leave game</span>
@@ -70,6 +70,42 @@
 
     <!-- Main Game Area -->
     <main class="relative z-10 flex-grow flex overflow-hidden p-4 gap-4">
+
+      <!-- Quit Confirmation Modal -->
+      <transition 
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0 backdrop-blur-none"
+        enter-to-class="opacity-100 backdrop-blur-md"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100 backdrop-blur-md"
+        leave-to-class="opacity-0 backdrop-blur-none"
+      >
+        <div v-if="showQuitConfirm" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-6">
+          <div class="bg-slate-900 border border-red-500/30 p-10 rounded-[2.5rem] shadow-[0_0_100px_rgba(239,68,68,0.1)] max-w-sm w-full relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent"></div>
+            <div class="text-center relative z-10">
+              <div class="text-5xl mb-6 transform group-hover:rotate-12 transition-transform">🥀</div>
+              <h3 class="text-xl font-black text-white uppercase tracking-widest mb-3">Abandon Court?</h3>
+              <p class="text-slate-400 text-xs font-medium leading-relaxed mb-8 uppercase tracking-wider">Are you certain you wish to abjure your position? Your influence will be lost.</p>
+              
+              <div class="flex flex-col gap-3">
+                <button 
+                  @click="store.quitGame()"
+                  class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs shadow-xl shadow-red-900/20 active:scale-95"
+                >
+                  Yes, Leave Court
+                </button>
+                <button 
+                  @click="showQuitConfirm = false"
+                  class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs border border-slate-700 active:scale-95"
+                >
+                  Stay & Fight
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
 
       <!-- Winner Overlay (Same as before) -->
       <transition enter-active-class="transition duration-1000" enter-from-class="opacity-0" enter-to-class="opacity-100">
@@ -171,11 +207,12 @@
 </template>
 
 <script setup>
-import { computed, defineComponent, h } from "vue"
+import { computed, defineComponent, h, ref } from "vue"
 import { useGameStore } from "../stores/gameStore"
 import PlayerHand from "./PlayerHand.vue"
 
 const store = useGameStore()
+const showQuitConfirm = ref(false)
 
 // Split players for side columns
 const leftPlayers = computed(() => store.game.players.slice(0, 2))
