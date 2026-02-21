@@ -76,6 +76,15 @@
       <p v-else class="text-slate-400 italic">Waiting for host to start...</p>
     </div>
 
+    <!-- Documentation Link -->
+    <a 
+      href="/src/assets/documentation.pdf" 
+      target="_blank"
+      class="flex items-center gap-2 text-slate-500 hover:text-amber-500 transition-colors text-sm font-bold uppercase tracking-widest bg-slate-900/50 px-4 py-2 rounded-full border border-slate-800 hover:border-amber-500/50"
+    >
+      <span class="text-lg">📜</span> Game Rules & Documentation
+    </a>
+
     <div v-if="store.error" class="fixed bottom-8 bg-red-500/90 text-white px-6 py-3 rounded-lg shadow-lg">
       {{ store.error }}
     </div>
