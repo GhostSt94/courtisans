@@ -1,5 +1,64 @@
 @import "tailwindcss";
 
+@theme {
+  --color-gold: #f59e0b;
+  --color-royal-blue: #1e3a8a;
+}
+
 body {
-  @apply bg-slate-900 text-slate-100 min-h-screen;
+  @apply bg-slate-950 text-slate-100 min-h-screen overflow-hidden selection:bg-amber-500/30 selection:text-amber-200;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
+}
+
+/* Base Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.05) 55%,
+    transparent 100%
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s;
+  pointer-events: none;
+}
+
+.card-shine:hover::after {
+  transform: rotate(45deg) translate(20%, 20%);
 }
