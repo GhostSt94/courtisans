@@ -6,7 +6,6 @@ yarn.lock
 # Build outputs
 dist/
 build/
-*.js
 *.map
 
 # Environment variables
