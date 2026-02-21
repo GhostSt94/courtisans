@@ -107,25 +107,32 @@
         </ul>
       </div>
 
-      <button
-        v-if="store.game.players[0].id === store.myId"
-        @click="store.startGame()"
-        :disabled="store.game.players.length < 2"
-        class="group relative w-full disabled:opacity-50"
-      >
-        <div class="absolute -inset-1 bg-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
-        <div class="relative w-full py-4 bg-emerald-600 group-hover:bg-emerald-500 text-emerald-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-sm shadow-xl">
-          Begin Intrigue
-        </div>
-      </button>
-      <div v-else class="flex flex-col items-center gap-3">
-        <div class="flex gap-1">
-          <div v-for="i in 3" :key="i" class="w-1.5 h-1.5 rounded-full bg-amber-500/50 animate-bounce" :style="{animationDelay: `${i*0.2}s`}"></div>
-        </div>
-        <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Waiting for the Decree...</p>
-      </div>
-    </div>
-
+            <button 
+              v-if="store.game.players[0].id === store.myId"
+              @click="store.startGame()"
+              :disabled="store.game.players.length < 2"
+              class="group relative w-full disabled:opacity-50"
+            >
+              <div class="absolute -inset-1 bg-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+              <div class="relative w-full py-4 bg-emerald-600 group-hover:bg-emerald-500 text-emerald-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-sm shadow-xl">
+                Begin Intrigue
+              </div>
+            </button>
+            <div v-else class="flex flex-col items-center gap-3">
+              <div class="flex gap-1">
+                <div v-for="i in 3" :key="i" class="w-1.5 h-1.5 rounded-full bg-amber-500/50 animate-bounce" :style="{animationDelay: `${i*0.2}s`}"></div>
+              </div>
+              <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Waiting for the Decree...</p>
+            </div>
+      
+            <!-- Quit Button -->
+            <button 
+              @click="store.quitGame()"
+              class="w-full py-3 rounded-2xl border border-red-500/20 text-red-500/60 hover:text-red-500 hover:bg-red-500/5 transition-all text-[10px] font-black uppercase tracking-[0.3em]"
+            >
+              Leave Chamber
+            </button>
+          </div>
     <!-- Documentation Link -->
     <a
       href="/src/assets/documentation.pdf"
@@ -153,7 +160,7 @@ const copied = ref(false)
 const copyCode = async () => {
   const code = store.game.id.substring(0, 8).toUpperCase()
   await navigator.clipboard.writeText(code)
-  copied.ref = true
+  copied.value = true
   setTimeout(() => copied.value = false, 2000)
 }
 </script>

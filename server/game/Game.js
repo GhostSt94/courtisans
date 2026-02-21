@@ -2,7 +2,7 @@
 const Deck = require("./Deck");
 
 class Game {
-  constructor(id, hostId, hostUsername) {
+  constructor(id, hostId, userId, hostUsername) {
     this.id = id;
     this.players = [];
     this.currentTurnIndex = 0;
@@ -27,21 +27,35 @@ class Game {
       playedTable: false,
     };
 
-    this.addPlayer(hostId, hostUsername);
+    this.addPlayer(hostId, userId, hostUsername);
   }
 
-  addPlayer(playerId, username) {
+  addPlayer(socketId, userId, username) {
     if (this.started) return;
     this.players.push({
-      id: playerId,
+      id: socketId,
+      userId: userId,
       username: username || `Player ${this.players.length + 1}`,
       domain: [], // Space in front where players play cards
       score: 0,
     });
   }
 
-  removePlayer(playerId) {
-    this.players = this.players.filter(p => p.id !== playerId);
+  updatePlayerSocket(userId, newSocketId) {
+    const player = this.players.find(p => p.userId === userId);
+    if (player) {
+      player.id = newSocketId;
+      return true;
+    }
+    return false;
+  }
+
+  removePlayerByUserId(userId) {
+    this.players = this.players.filter(p => p.userId !== userId);
+  }
+
+  removePlayerBySocketId(socketId) {
+    this.players = this.players.filter(p => p.id !== socketId);
   }
 
   start() {

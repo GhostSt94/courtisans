@@ -8,10 +8,10 @@
         </div>
         <h1 class="text-2xl font-black text-white tracking-[0.2em]">COURTISANS</h1>
       </div>
-      
+
       <div class="flex items-center gap-8">
         <div class="flex flex-col items-center">
-          <span class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Current Decree</span>
+          <span class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Current Player</span>
           <div class="px-4 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full">
             <span class="text-xs font-black text-amber-400 uppercase">
               {{ currentPlayerName }}
@@ -23,6 +23,20 @@
           <span class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Chamber ID</span>
           <span class="font-mono text-xs text-slate-400 bg-slate-800/50 px-2 py-0.5 rounded border border-slate-700/50">{{ store.game.id.substring(0, 8) }}</span>
         </div>
+        <div class="h-10 w-px bg-slate-800"></div>
+        <button
+          @click="store.quitGame()"
+          class="flex flex-col items-center group/quit cursor-pointer"
+        >
+          <span class="text-[9px] text-red-500/50 group-hover/quit:text-red-500 uppercase font-black tracking-widest mb-1 transition-colors">Leave game</span>
+          <div class="w-10 h-10 rounded-xl bg-red-500/5 border border-red-500/20 group-hover/quit:bg-red-500 group-hover/quit:border-red-500 flex items-center justify-center transition-all group-hover/quit:shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover/quit:scale-110 transition-transform">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </div>
+        </button>
       </div>
     </header>
 
@@ -45,7 +59,7 @@
                   <span class="text-amber-500 font-mono text-lg font-black">{{ p.score }}</span>
                 </div>
               </div>
-              <button @click="window.location.reload()" class="relative group">
+              <button @click="store.quitGame()" class="relative group">
                 <div class="absolute -inset-1 bg-amber-500 rounded-full blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
                 <div class="relative px-12 py-4 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-full uppercase transition-all shadow-2xl">
                   Return to Court
@@ -53,7 +67,7 @@
               </button>
             </div>
           </div>
-    
+
           <!-- Top Info: Deck & Table -->
           <div class="flex flex-col xl:flex-row gap-8 items-start justify-center">
             <!-- Deck Pile -->
@@ -69,34 +83,34 @@
               </div>
               <span class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Royal Deck</span>
             </div>
-    
+
             <!-- Queen's Carpet (River) -->
             <section class="flex-grow flex flex-col items-center gap-6 p-8 bg-slate-900/40 rounded-[2.5rem] border border-slate-800/50 w-full max-w-6xl backdrop-blur-sm relative overflow-hidden shadow-inner">
               <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-5 pointer-events-none"></div>
-              
+
               <div class="flex items-center gap-4 w-full">
                 <div class="h-px bg-slate-800 flex-grow"></div>
                 <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.5em]">The Queen's Carpet</h2>
                 <div class="h-px bg-slate-800 flex-grow"></div>
               </div>
-              
+
               <div class="grid grid-cols-7 gap-3 w-full">
                 <!-- Family Columns -->
                 <div v-for="(data, family) in store.game.table" :key="family" class="flex flex-col gap-3 relative group">
                   <!-- Status Indicator (Game Over only) -->
-                  <div v-if="store.game.gameOver && family !== 'Mystery'" 
+                  <div v-if="store.game.gameOver && family !== 'Mystery'"
                        class="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-full text-[9px] font-black uppercase shadow-2xl z-20 border border-white/10"
                        :class="familyStatusClass(family)">
                     {{ familyStatusLabel(family) }}
                   </div>
-    
+
                   <!-- Positive Section -->
                   <div class="h-40 bg-slate-950/40 rounded-2xl border border-slate-800/50 p-3 flex flex-col items-center gap-1.5 overflow-y-auto hover:bg-slate-900/50 transition-colors">
                     <span class="text-[10px] font-black text-emerald-500/40 mb-1 leading-none tracking-widest">ESTEEM</span>
-                    <div v-for="card in data.positive" :key="card.id" 
+                    <div v-for="card in data.positive" :key="card.id"
                       @click="onBoardCardClick('table', null, card)"
                       :class="[
-                        'w-full h-10 rounded-lg border shadow-lg flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative card-shine', 
+                        'w-full h-10 rounded-lg border shadow-lg flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative card-shine',
                         (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
                         canDiscard(card, 'table', null) ? 'cursor-pointer hover:scale-110 hover:brightness-125 ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10' : ''
                       ]">
@@ -106,19 +120,19 @@
                       </span>
                     </div>
                   </div>
-    
+
                   <!-- Color Bar -->
                   <div :class="['h-10 flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-xl rounded-xl border border-white/10 relative overflow-hidden group-hover:scale-105 transition-transform', carpetColorClass(family)]">
                     <div class="absolute inset-0 bg-white/10 mix-blend-overlay"></div>
                     <span class="relative z-10 drop-shadow-md">{{ family === 'Mystery' ? '???' : family }}</span>
                   </div>
-    
+
                   <!-- Negative Section -->
                   <div class="h-40 bg-slate-950/40 rounded-2xl border border-slate-800/50 p-3 flex flex-col items-center gap-1.5 overflow-y-auto hover:bg-slate-900/50 transition-colors">
-                    <div v-for="card in data.negative" :key="card.id" 
+                    <div v-for="card in data.negative" :key="card.id"
                       @click="onBoardCardClick('table', null, card)"
                       :class="[
-                        'w-full h-10 rounded-lg border shadow-lg flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative card-shine', 
+                        'w-full h-10 rounded-lg border shadow-lg flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative card-shine',
                         (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
                         canDiscard(card, 'table', null) ? 'cursor-pointer hover:scale-110 hover:brightness-125 ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10' : ''
                       ]">
@@ -133,7 +147,7 @@
               </div>
             </section>
           </div>
-    
+
 
       <!-- Player Domains -->
       <div class="flex items-center gap-4 w-full">
@@ -143,13 +157,13 @@
       </div>
 
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div 
-          v-for="player in store.game.players" 
+        <div
+          v-for="player in store.game.players"
           :key="player.id"
           :class="[
             'flex flex-col gap-4 p-5 rounded-[2rem] border-2 transition-all relative group',
-            player.id === store.game.currentTurn 
-              ? 'border-amber-500/50 bg-slate-900/80 shadow-[0_20px_50px_rgba(245,158,11,0.15)] ring-4 ring-amber-500/5' 
+            player.id === store.game.currentTurn
+              ? 'border-amber-500/50 bg-slate-900/80 shadow-[0_20px_50px_rgba(245,158,11,0.15)] ring-4 ring-amber-500/5'
               : 'border-slate-800 bg-slate-900/40 opacity-80 hover:opacity-100 hover:border-slate-700'
           ]"
         >
@@ -165,12 +179,12 @@
           </div>
 
           <div class="flex-grow flex flex-wrap content-start gap-2 p-4 bg-slate-950/60 rounded-2xl min-h-[140px] border border-slate-800/50 shadow-inner group-hover:bg-slate-950/80 transition-colors">
-            <div 
-              v-for="card in player.domain" 
+            <div
+              v-for="card in player.domain"
               :key="card.id"
               @click="onBoardCardClick('player', player.id, card)"
               :class="[
-                'w-10 h-14 rounded-lg border shadow-xl flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative group/card', 
+                'w-10 h-14 rounded-lg border shadow-xl flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative group/card',
                 (card.isMystery && player.id !== store.myId && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
                 canDiscard(card, 'player', player.id) ? 'cursor-pointer hover:scale-110 hover:brightness-125 ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10' : ''
               ]"
@@ -182,10 +196,10 @@
               </span>
             </div>
           </div>
-          
+
           <!-- Turn Indicator -->
           <div v-if="player.id === store.game.currentTurn" class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-500 rounded-full text-[9px] font-black text-amber-950 uppercase shadow-lg animate-float">
-            ACTIVE DECREE
+            ACTIVE PLAYER
           </div>
         </div>
       </section>

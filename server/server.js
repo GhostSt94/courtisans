@@ -28,15 +28,15 @@ io.on("connection", (socket) => {
   console.log("Player connected:", socket.id);
 
   // Create game
-  socket.on("createGame", ({ username }) => {
-    const game = gameManager.createGame(socket.id, username);
+  socket.on("createGame", ({ userId, username }) => {
+    const game = gameManager.createGame(socket.id, userId, username);
     socket.join(game.id);
     socket.emit("gameUpdated", game.getStateForPlayer(socket.id));
   });
 
   // Join game
-  socket.on("joinGame", ({ gameId, username }) => {
-    const game = gameManager.joinGame(gameId, socket.id, username);
+  socket.on("joinGame", ({ gameId, userId, username }) => {
+    const game = gameManager.joinGame(gameId, socket.id, userId, username);
 
     if (!game) {
       socket.emit("errorMessage", "Game not found or full");
@@ -45,6 +45,32 @@ io.on("connection", (socket) => {
 
     socket.join(game.id);
     broadcastGameState(game);
+  });
+
+  // Reconnect to game
+  socket.on("reconnectGame", ({ gameId, userId }) => {
+    const game = gameManager.getGame(gameId);
+    if (game && game.updatePlayerSocket(userId, socket.id)) {
+      socket.join(game.id);
+      socket.emit("gameUpdated", game.getStateForPlayer(socket.id));
+      broadcastGameState(game);
+    } else {
+      socket.emit("errorMessage", "Could not reconnect to game");
+      socket.emit("gameUpdated", null);
+      // Clear game from localStorage if reconnection failed
+    }
+  });
+
+  // Quit game
+  socket.on("quitGame", ({ gameId, userId }) => {
+    if (gameManager.quitGame(gameId, userId)) {
+      const game = gameManager.getGame(gameId);
+      if (game) {
+        broadcastGameState(game);
+      }
+      socket.leave(gameId);
+      socket.emit("gameUpdated", null);
+    }
   });
 
   // Start game
@@ -101,7 +127,6 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("Player disconnected:", socket.id);
-    gameManager.removePlayer(socket.id);
   });
 });
 

@@ -7,23 +7,20 @@ class GameManager {
     this.games = new Map();
   }
 
-  createGame(playerId, username) {
+  createGame(socketId, userId, username) {
     const id = uuidv4();
-    const game = new Game(id, playerId, username);
+    const game = new Game(id, socketId, userId, username);
     this.games.set(id, game);
     return game;
   }
 
-  joinGame(gameId, playerId, username) {
-    const game = Array.from(this.games.values()).find(g => 
-      g.id.toLowerCase() === gameId.toLowerCase() || 
-      g.id.substring(0, 8).toLowerCase() === gameId.toLowerCase()
-    );
+  joinGame(gameId, socketId, userId, username) {
+    const game = this.getGame(gameId);
 
     if (!game) return null;
     if (game.players.length >= 5) return null;
 
-    game.addPlayer(playerId, username);
+    game.addPlayer(socketId, userId, username);
     return game;
   }
 
@@ -34,10 +31,29 @@ class GameManager {
     );
   }
 
-  removePlayer(playerId) {
+  getGameByUserId(userId) {
+    return Array.from(this.games.values()).find(game => 
+      game.players.some(p => p.userId === userId)
+    );
+  }
+
+  removePlayerBySocketId(socketId) {
     for (let game of this.games.values()) {
-      game.removePlayer(playerId);
+      game.removePlayerBySocketId(socketId);
     }
+  }
+
+  quitGame(gameId, userId) {
+    const game = this.getGame(gameId);
+    if (game) {
+      game.removePlayerByUserId(userId);
+      // If no players left, remove the game
+      if (game.players.length === 0) {
+        this.games.delete(game.id);
+      }
+      return true;
+    }
+    return false;
   }
 }
 
