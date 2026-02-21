@@ -2,18 +2,7 @@
   <div class="flex flex-col gap-6">
     <div v-if="isMyTurn" class="flex flex-col gap-2">
       <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] text-center">Your Turn's Decree</h3>
-      <div v-if="store.game.turnActions.pendingAssassin" class="flex flex-col items-center gap-2">
-        <p class="text-xs text-red-500 text-center uppercase font-black animate-pulse">
-          ASSASSIN PLAYED! Select a card on the board to discard.
-        </p>
-        <button 
-          @click="store.skipDiscard()"
-          class="px-4 py-1.5 bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 text-slate-400 font-black rounded-full text-[8px] uppercase transition-all hover:text-white"
-        >
-          Skip Discard
-        </button>
-      </div>
-      <p v-else class="text-[10px] text-amber-500 text-center uppercase font-bold flex justify-center gap-4">
+      <p class="text-[10px] text-amber-500 text-center uppercase font-bold flex justify-center gap-4">
         <span :class="{'line-through opacity-20': store.game.turnActions.playedSelf}">1 to Domain</span>
         <span :class="{'line-through opacity-20': store.game.turnActions.playedOther}">1 to Opponent</span>
         <span :class="{'line-through opacity-20': store.game.turnActions.playedTable}">1 to Carpet</span>
@@ -21,7 +10,7 @@
     </div>
 
     <!-- Hand cards -->
-    <div v-if="!store.game.turnActions.pendingAssassin" class="flex flex-wrap items-center justify-center gap-6">
+    <div class="flex flex-wrap items-center justify-center gap-6">
       <div 
         v-for="card in store.game.myHand" 
         :key="card.id"
@@ -34,10 +23,13 @@
       >
         <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
         <div class="p-3 flex flex-col gap-1">
-          <span class="text-3xl font-black font-mono text-white tracking-tighter">
-            {{ card.family.charAt(0) }}
-          </span>
-          <span class="text-[8px] font-black text-white/50 uppercase tracking-tighter">{{ card.role }}</span>
+          <div class="flex justify-between items-start">
+            <span class="text-3xl font-black font-mono text-white tracking-tighter">
+              {{ card.family.charAt(0) }}
+            </span>
+            <span class="text-xl">{{ roleIcon(card.role) }}</span>
+          </div>
+          <span class="text-[8px] font-black text-white/50 uppercase tracking-tighter">{{ card.role === 'Courtesan' ? '' : card.role }}</span>
         </div>
         <div class="absolute bottom-3 left-0 right-0 text-center font-black text-[10px] uppercase text-white/90 tracking-widest">
           {{ card.family }}
@@ -46,11 +38,11 @@
     </div>
 
     <!-- Play Options -->
-    <div v-if="selectedCard && !store.game.turnActions.pendingAssassin" class="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div v-if="selectedCard" class="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div class="flex flex-wrap justify-center gap-4">
-        <!-- Self (Hidden for Spies) -->
+        <!-- Self -->
         <button 
-          v-if="!store.game.turnActions.playedSelf && selectedCard.role !== 'Spy'"
+          v-if="!store.game.turnActions.playedSelf"
           @click="playCard('self')"
           class="flex flex-col items-center gap-1 group"
         >
@@ -151,6 +143,17 @@ const playCard = (targetType, targetPlayerId = null, position = null) => {
 watch(() => store.game?.myHand?.length, () => {
   selectedCard.value = null
 })
+
+const roleIcon = (role) => {
+  const icons = {
+    Noble: '👑',
+    Spy: '🎭',
+    Assassin: '🗡️',
+    Guard: '🛡️',
+    Courtesan: '',
+  }
+  return icons[role] || ''
+}
 
 const cardColorClass = (color) => {
   const colors = {

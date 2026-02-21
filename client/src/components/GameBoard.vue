@@ -73,14 +73,14 @@
                   <div class="h-32 bg-slate-900/60 rounded-t-xl border-t border-x border-slate-800/50 p-2 flex flex-col items-center gap-1 overflow-y-auto">
                     <span class="text-[8px] font-black text-green-500/50 uppercase mb-1">+</span>
                     <div v-for="card in data.positive" :key="card.id" 
-                      @click="onBoardCardClick('table', null, card)"
                       :class="[
-                        'w-full h-8 rounded-sm border shadow-sm flex items-center justify-center text-[8px] font-black text-white shrink-0 transition-all', 
-                        (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
-                        canDiscard(card, 'table', null) ? 'cursor-pointer hover:scale-105 hover:brightness-125 ring-2 ring-red-500 ring-offset-1 ring-offset-slate-900' : ''
+                        'w-full h-8 rounded-sm border shadow-sm flex items-center justify-center text-[8px] font-black text-white shrink-0 transition-all relative', 
+                        (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color)
                       ]">
                       {{ (family === 'Mystery' && !store.game.gameOver) ? '?' : card.family.charAt(0) }}
-                      <span v-if="card.role === 'Guard' && !(family === 'Mystery' && !store.game.gameOver)" class="ml-1 text-[6px]">🛡️</span>
+                      <span v-if="!(family === 'Mystery' && !store.game.gameOver)" class="absolute right-0.5 top-0.5 text-[6px]">
+                        {{ roleIcon(card.role) }}
+                      </span>
                     </div>
                   </div>
     
@@ -92,14 +92,14 @@
                   <!-- Negative Section -->
                   <div class="h-32 bg-slate-900/60 rounded-b-xl border-b border-x border-slate-800/50 p-2 flex flex-col items-center gap-1 overflow-y-auto">
                     <div v-for="card in data.negative" :key="card.id" 
-                      @click="onBoardCardClick('table', null, card)"
                       :class="[
-                        'w-full h-8 rounded-sm border shadow-sm flex items-center justify-center text-[8px] font-black text-white shrink-0 transition-all', 
-                        (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
-                        canDiscard(card, 'table', null) ? 'cursor-pointer hover:scale-105 hover:brightness-125 ring-2 ring-red-500 ring-offset-1 ring-offset-slate-900' : ''
+                        'w-full h-8 rounded-sm border shadow-sm flex items-center justify-center text-[8px] font-black text-white shrink-0 transition-all relative', 
+                        (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color)
                       ]">
                       {{ (family === 'Mystery' && !store.game.gameOver) ? '?' : card.family.charAt(0) }}
-                      <span v-if="card.role === 'Guard' && !(family === 'Mystery' && !store.game.gameOver)" class="ml-1 text-[6px]">🛡️</span>
+                      <span v-if="!(family === 'Mystery' && !store.game.gameOver)" class="absolute right-0.5 top-0.5 text-[6px]">
+                        {{ roleIcon(card.role) }}
+                      </span>
                     </div>
                     <span class="text-[8px] font-black text-red-500/50 uppercase mt-1">-</span>
                   </div>
@@ -128,15 +128,15 @@
             <div 
               v-for="card in player.domain" 
               :key="card.id"
-              @click="onBoardCardClick('player', player.id, card)"
               :class="[
                 'w-8 h-12 rounded-sm border shadow-sm flex items-center justify-center text-[8px] font-black text-white shrink-0 transition-all relative', 
-                (card.isMystery && player.id !== store.myId && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
-                canDiscard(card, 'player', player.id) ? 'cursor-pointer hover:scale-105 hover:brightness-125 ring-2 ring-red-500 ring-offset-1 ring-offset-slate-900' : ''
+                (card.isMystery && player.id !== store.myId && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color)
               ]"
             >
               {{ (card.isMystery && player.id !== store.myId && !store.game.gameOver) ? '?' : card.family.charAt(0) }}
-              <span v-if="card.role === 'Guard' && !((card.isMystery && player.id !== store.myId && !store.game.gameOver))" class="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 scale-50">🛡️</span>
+              <span v-if="!((card.isMystery && player.id !== store.myId && !store.game.gameOver))" class="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 scale-[0.6]">
+                {{ roleIcon(card.role) }}
+              </span>
             </div>
           </div>
         </div>
@@ -165,8 +165,6 @@ const currentPlayerName = computed(() => {
 })
 
 const isMyTurn = computed(() => store.game.currentTurn === store.myId)
-const isPendingAssassin = computed(() => store.game.turnActions.pendingAssassin)
-const assassinZone = computed(() => store.game.turnActions.assassinZone)
 
 const winnerName = computed(() => {
   const winner = store.game.players.find(p => p.id === store.game.winnerId)
@@ -176,6 +174,17 @@ const winnerName = computed(() => {
 const sortedPlayers = computed(() => {
   return [...store.game.players].sort((a, b) => b.score - a.score)
 })
+
+const roleIcon = (role) => {
+  const icons = {
+    Noble: '👑',
+    Spy: '🎭',
+    Assassin: '🗡️',
+    Guard: '🛡️',
+    Courtesan: '',
+  }
+  return icons[role] || ''
+}
 
 const familyStatusLabel = (family) => {
   const status = store.game.familyStatuses?.[family]
@@ -189,32 +198,6 @@ const familyStatusClass = (family) => {
   if (status === 1) return 'bg-green-600 text-white shadow-green-500/20'
   if (status === -1) return 'bg-red-600 text-white shadow-red-500/20'
   return 'bg-slate-700 text-slate-300'
-}
-
-const canDiscard = (card, targetType, targetPlayerId) => {
-  if (!isMyTurn.value || !isPendingAssassin.value || card.role === 'Guard') return false;
-
-  const az = assassinZone.value;
-  if (!az) return false;
-
-  // Comparison logic matching server
-  if (az.targetType === 'table' || az.targetType === 'mystery') {
-    return targetType === 'table';
-  }
-  if (az.targetType === 'self') {
-    return targetType === 'player' && targetPlayerId === store.myId;
-  }
-  if (az.targetType === 'other' || az.targetType === 'other_mystery') {
-    return targetType === 'player' && targetPlayerId === az.targetPlayerId;
-  }
-
-  return false;
-}
-
-const onBoardCardClick = (targetType, targetPlayerId, card) => {
-  if (canDiscard(card, targetType, targetPlayerId)) {
-    store.discardCard(targetType, targetPlayerId, card.id)
-  }
 }
 
 const cardColorClass = (color) => {
