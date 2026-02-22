@@ -41,7 +41,7 @@
         <button
           @click="store.createGame(username)"
           :disabled="!username"
-          class="relative group/btn disabled:opacity-50"
+          class="cursor-pointer relative group/btn disabled:opacity-50"
         >
           <div class="absolute -inset-0.5 bg-amber-500 rounded-2xl blur opacity-20 group-hover/btn:opacity-60 transition duration-500"></div>
           <div class="relative w-full py-4 bg-amber-600 group-hover/btn:bg-amber-500 text-amber-950 font-black rounded-2xl transition-all transform hover:scale-[1.02] active:scale-[0.98] uppercase tracking-widest text-sm shadow-xl flex items-center justify-center gap-3">
@@ -139,7 +139,7 @@
       target="_blank"
       class="flex items-center gap-3 text-slate-500 hover:text-amber-500 transition-all text-[10px] font-black uppercase tracking-[0.4em] bg-slate-900/40 px-6 py-3 rounded-2xl border border-slate-800 hover:border-amber-500/50 backdrop-blur-md group"
     >
-      <span class="text-xl group-hover:rotate-12 transition-transform">📜</span> Royal Archives
+      <span class="text-xl group-hover:rotate-12 transition-transform">📜</span> Game documentation
     </a>
 
     <div v-if="store.error" class="fixed bottom-8 bg-red-500/90 text-white px-6 py-3 rounded-lg shadow-lg">

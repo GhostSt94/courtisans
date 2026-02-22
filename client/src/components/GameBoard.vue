@@ -145,7 +145,9 @@
             <div class="grid grid-cols-7 gap-px bg-slate-800/50 flex-grow overflow-hidden">
               <div v-for="(data, family) in store.game.table" :key="family" class="flex flex-col bg-slate-900/40 relative group h-full">
                 <!-- Esteem -->
-                <div class="flex-1 p-2 flex flex-col items-center gap-1.5 overflow-y-auto custom-scrollbar">
+                <div class="flex-1 p-2 flex flex-col items-center gap-1.5 overflow-y-auto custom-scrollbar relative pt-7">
+                    <h6 v-if="family === 'Mystery'" class="uppercase text-gray-400/40 font-black text-[9px] absolute top-1 right-[50%] translate-x-[50%]">Glory</h6>
+                    <h6 v-else class="uppercase text-gray-400/40 font-black text-[9px] absolute top-1 right-[50%] translate-x-[50%]" :class="isDisgrace(data.positive, data.negative) === -1 ? '!text-green-600/40' : ''">Glory ({{sumValue(data.positive)}})</h6>
                   <div v-for="card in data.positive" :key="card.id"
                     @click="onBoardCardClick('table', null, card)"
                     :class="[
@@ -169,7 +171,7 @@
                 </div>
 
                 <!-- Disgrace -->
-                <div class="flex-1 p-2 flex flex-col items-center gap-1.5 overflow-y-auto custom-scrollbar border-t border-white/5">
+                <div class="flex-1 p-2 flex flex-col items-center gap-1.5 overflow-y-auto custom-scrollbar border-t border-white/5 relative pb-6">
                   <div v-for="card in data.negative" :key="card.id"
                     @click="onBoardCardClick('table', null, card)"
                     :class="[
@@ -182,6 +184,8 @@
                       {{ roleIcon(card.role) }}
                     </span>
                   </div>
+                    <h6 v-if="family === 'Mystery'" class="uppercase text-gray-400/40 font-black text-[9px] absolute bottom-1 right-[50%] translate-x-[50%]">Disgrace</h6>
+                    <h6 v-else class="uppercase text-gray-400/40 font-black text-[9px] absolute bottom-1 right-[50%] translate-x-[50%]" :class="isDisgrace(data.positive, data.negative) === 1 ? 'text-red-500/40' :''">Disgrace ({{sumValue(data.negative)}})</h6>
                 </div>
               </div>
             </div>
@@ -218,6 +222,22 @@ const showQuitConfirm = ref(false)
 const leftPlayers = computed(() => store.game.players.slice(0, 2))
 const rightPlayers = computed(() => store.game.players.slice(2, 5))
 
+//
+const sumValue = (array)=>{
+    return array.reduce((total, obj) => {
+        return total + (obj.value ?? 0);
+    }, 0)
+}
+const isDisgrace = (positive, negative)=>{
+    let ngt = negative.reduce((total, obj) => {
+        return total + (obj.value ?? 0);
+    }, 0)
+    let pst = positive.reduce((total, obj) => {
+        return total + (obj.value ?? 0);
+    }, 0)
+    if(ngt === pst) return null
+    return ngt > pst ? 1 : -1
+}
 // Helper Component for Player Card
 const PlayerEstateCard = defineComponent({
   props: ['player'],
@@ -315,7 +335,7 @@ const cardColorClass = (color) => {
     green: 'bg-gradient-to-br from-emerald-700 to-emerald-950 border-emerald-500/40',
     yellow: 'bg-gradient-to-br from-amber-600 to-amber-950 border-amber-400/40',
     purple: 'bg-gradient-to-br from-violet-700 to-indigo-950 border-violet-500/40',
-    teal: 'bg-gradient-to-br from-teal-600 to-teal-950 border-teal-400/40',
+      olive: 'bg-gradient-to-br from-olive-600 to-olive-900 border-olive-400/40',
   }
   return colors[color] || 'bg-slate-700'
 }
