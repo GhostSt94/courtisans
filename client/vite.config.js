@@ -9,11 +9,5 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    proxy: {
-      '/socket.io': {
-        target: 'https://courtisans-e6kg.onrender.com',
-        ws: true
-      }
-    }
   }
 })
