@@ -79,11 +79,32 @@ class Game {
       playedSelf: false,
       playedOther: false,
       playedTable: false,
+      pendingAssassin: false,
+      assassinZone: null,
     };
   }
 
   getCurrentPlayer() {
     return this.players[this.currentTurnIndex];
+  }
+
+  canDiscardAny(targetType, targetPlayerId, excludeCardId) {
+    if (targetType === 'table' || targetType === 'mystery') {
+      for (const fam in this.table) {
+        for (const pos of ['positive', 'negative']) {
+          if (this.table[fam][pos].some(c => c.id !== excludeCardId && c.role !== 'Guard')) {
+            return true;
+          }
+        }
+      }
+    } else {
+      let actualPlayerId = (targetType === 'self') ? this.getCurrentPlayer().id : targetPlayerId;
+      const player = this.players.find(p => p.id === actualPlayerId);
+      if (player && player.domain.some(c => c.id !== excludeCardId && c.role !== 'Guard')) {
+        return true;
+      }
+    }
+    return false;
   }
 
   playCard(playerId, cardId, targetType, targetPlayerId, position) {
@@ -153,8 +174,12 @@ class Game {
             
                         // Handle Assassin discard logic if it was an Assassin
                         if (card.role === "Assassin") {
-                          this.turnState.pendingAssassin = true;
-                          this.turnState.assassinZone = { targetType, targetPlayerId };
+                          if (this.canDiscardAny(targetType, targetPlayerId, card.id)) {
+                            this.turnState.pendingAssassin = true;
+                            this.turnState.assassinZone = { targetType, targetPlayerId, playedCardId: card.id };
+                          } else {
+                            this.turnState.pendingAssassin = false;
+                          }
                         }
             
                         this.turnState.drawnCards.splice(cardIndex, 1);
@@ -170,6 +195,9 @@ class Game {
             
                         // Validate Zone
                         const az = this.turnState.assassinZone;
+                        
+                        if (cardId === az.playedCardId) return { success: false, message: "Cannot discard the Assassin you just played" };
+
                         // Map 'mystery' to 'table' and 'other_mystery' to 'player' for zone comparison
                         const zoneMatch = (az.targetType === 'table' || az.targetType === 'mystery') ? (targetType === 'table') :
                                          (az.targetType === 'self') ? (targetType === 'player' && targetPlayerId === playerId) :

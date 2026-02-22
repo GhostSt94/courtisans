@@ -329,6 +329,8 @@ const canDiscard = (card, targetType, targetPlayerId) => {
   if (!isMyTurn.value || !isPendingAssassin.value || card.role === 'Guard') return false;
   const az = assassinZone.value;
   if (!az) return false;
+  if (card.id === az.playedCardId) return false;
+  
   if (az.targetType === 'table' || az.targetType === 'mystery') return targetType === 'table';
   if (az.targetType === 'self') return targetType === 'player' && targetPlayerId === store.myId;
   if (az.targetType === 'other' || az.targetType === 'other_mystery') return targetType === 'player' && targetPlayerId === az.targetPlayerId;
