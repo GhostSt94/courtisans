@@ -7,7 +7,7 @@ class Deck {
       { name: "Bird", color: "green" },
       { name: "Sun", color: "yellow" },
       { name: "Moon", color: "purple" },
-      { name: "Star", color: "orange" }
+      { name: "Star", color: "olive" }
     ];
     this.cards = this.generateDeck();
     this.shuffle();

@@ -72,7 +72,7 @@
     <main class="relative z-10 flex-grow flex overflow-hidden p-4 gap-4">
 
       <!-- Quit Confirmation Modal -->
-      <transition 
+      <transition
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="opacity-0 backdrop-blur-none"
         enter-to-class="opacity-100 backdrop-blur-md"
@@ -87,15 +87,15 @@
               <div class="text-5xl mb-6 transform group-hover:rotate-12 transition-transform">🥀</div>
               <h3 class="text-xl font-black text-white uppercase tracking-widest mb-3">Abandon Court?</h3>
               <p class="text-slate-400 text-xs font-medium leading-relaxed mb-8 uppercase tracking-wider">Are you certain you wish to abjure your position? Your influence will be lost.</p>
-              
+
               <div class="flex flex-col gap-3">
-                <button 
+                <button
                   @click="store.quitGame()"
                   class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs shadow-xl shadow-red-900/20 active:scale-95"
                 >
                   Yes, Leave Court
                 </button>
-                <button 
+                <button
                   @click="showQuitConfirm = false"
                   class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs border border-slate-700 active:scale-95"
                 >
@@ -315,7 +315,7 @@ const cardColorClass = (color) => {
     green: 'bg-gradient-to-br from-emerald-700 to-emerald-950 border-emerald-500/40',
     yellow: 'bg-gradient-to-br from-amber-600 to-amber-950 border-amber-400/40',
     purple: 'bg-gradient-to-br from-violet-700 to-indigo-950 border-violet-500/40',
-    orange: 'bg-gradient-to-br from-orange-700 to-orange-950 border-orange-500/40',
+    teal: 'bg-gradient-to-br from-teal-600 to-teal-950 border-teal-400/40',
   }
   return colors[color] || 'bg-slate-700'
 }
@@ -327,7 +327,7 @@ const carpetColorClass = (family) => {
     "Bird": "bg-emerald-700 border-emerald-500/50",
     "Sun": "bg-amber-600 border-amber-500/50",
     "Moon": "bg-violet-700 border-violet-500/50",
-    "Star": "bg-orange-700 border-orange-500/50",
+    "Star": "bg-olive-700 border-olive-500/50",
     "Mystery": "bg-slate-800 border-slate-600/50 bg-[radial-gradient(circle,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4px_4px]"
   }
   return colors[family] || 'bg-slate-600'

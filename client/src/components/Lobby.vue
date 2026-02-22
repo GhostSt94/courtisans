@@ -65,7 +65,7 @@
           <button
             @click="store.joinGame(gameIdInput, username)"
             :disabled="!username || !gameIdInput"
-            class="px-8 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 rounded-2xl font-black transition-all text-xs uppercase tracking-widest border border-slate-700"
+            class="cursor-pointer px-8 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 rounded-2xl font-black transition-all text-xs uppercase tracking-widest border border-slate-700"
           >
             Enter
           </button>
@@ -107,11 +107,11 @@
         </ul>
       </div>
 
-            <button 
+            <button
               v-if="store.game.players[0].id === store.myId"
               @click="store.startGame()"
               :disabled="store.game.players.length < 2"
-              class="group relative w-full disabled:opacity-50"
+              class="cursor-pointer group relative w-full disabled:opacity-50"
             >
               <div class="absolute -inset-1 bg-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
               <div class="relative w-full py-4 bg-emerald-600 group-hover:bg-emerald-500 text-emerald-950 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-sm shadow-xl">
@@ -124,11 +124,11 @@
               </div>
               <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Waiting for the Decree...</p>
             </div>
-      
+
             <!-- Quit Button -->
-            <button 
+            <button
               @click="store.quitGame()"
-              class="w-full py-3 rounded-2xl border border-red-500/20 text-red-500/60 hover:text-red-500 hover:bg-red-500/5 transition-all text-[10px] font-black uppercase tracking-[0.3em]"
+              class="cursor-pointer w-full py-3 rounded-2xl border border-red-500/20 text-red-500/60 hover:text-red-500 hover:bg-red-500/5 transition-all text-[10px] font-black uppercase tracking-[0.3em]"
             >
               Leave Chamber
             </button>
