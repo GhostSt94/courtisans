@@ -135,11 +135,11 @@
           </div>
     <!-- Documentation Link -->
     <a
-      href="/src/assets/documentation.pdf"
+      href="/documentation.pdf"
       target="_blank"
       class="flex items-center gap-3 text-slate-500 hover:text-amber-500 transition-all text-[10px] font-black uppercase tracking-[0.4em] bg-slate-900/40 px-6 py-3 rounded-2xl border border-slate-800 hover:border-amber-500/50 backdrop-blur-md group"
     >
-      <span class="text-xl group-hover:rotate-12 transition-transform">📜</span> Game documentation
+      <span class="text-xl group-hover:rotate-12 transition-transform">📜</span> Game rules
     </a>
 
     <div v-if="store.error" class="fixed bottom-8 bg-red-500/90 text-white px-6 py-3 rounded-lg shadow-lg">

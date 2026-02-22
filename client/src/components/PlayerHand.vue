@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <div v-if="isMyTurn" class="flex flex-col gap-2">
-      <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] text-center">Your Turn's Decree</h3>
+      <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] text-center">Your Turn</h3>
       <div v-if="store.game.turnActions.pendingAssassin" class="flex flex-col items-center gap-4 py-2 animate-in fade-in zoom-in duration-500">
         <div class="flex flex-col items-center gap-1">
           <p class="text-sm text-red-500 text-center uppercase font-black tracking-widest animate-pulse">
