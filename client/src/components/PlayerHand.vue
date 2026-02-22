@@ -54,12 +54,12 @@
         <div class="relative h-full p-4 flex flex-col justify-between">
           <div class="flex justify-between items-start">
             <div class="flex flex-col">
-              <span class="text-4xl font-black font-serif text-white tracking-tighter leading-none">
+              <span class="text-4xl font-black font-serif text-white tracking-tighter leading-none text-outline-black">
                 {{ card.family.charAt(0) }}
               </span>
               <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">{{ card.family }}</span>
             </div>
-            <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner group-hover:scale-110 transition-transform">
+            <div :title="roleDescription(card.role)" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner group-hover:scale-110 transition-transform">
               <span class="text-xl drop-shadow-lg">{{ roleIcon(card.role) }}</span>
             </div>
           </div>
@@ -190,14 +190,25 @@ const roleIcon = (role) => {
   return icons[role] || ''
 }
 
+const roleDescription = (role) => {
+    const icons = {
+        Noble: 'At the end of the Game, every Noble count as 2 cards',
+        Spy: 'The Spy is played face down hidden, no one knows in which family the card belongs until the end of the game',
+        Assassin: 'When played in a zone, you can choose to discard a card from that zone (the queen\'s carpet count as one zone)',
+        Guard: 'This card can\'t be targeted by the Assassin',
+        Courtesan: '',
+    }
+    return icons[role] || ''
+}
+
 const cardColorClass = (color) => {
   const colors = {
-    red: 'bg-gradient-to-br from-red-700 to-red-950 border-red-500/50 shadow-red-950/50',
-    blue: 'bg-gradient-to-br from-blue-700 to-blue-950 border-blue-500/50 shadow-blue-950/50',
-    green: 'bg-gradient-to-br from-emerald-700 to-emerald-950 border-emerald-500/50 shadow-emerald-950/50',
-    yellow: 'bg-gradient-to-br from-amber-600 to-amber-900 border-amber-400/50 shadow-amber-900/50',
-    purple: 'bg-gradient-to-br from-purple-700 to-purple-950 border-purple-500/50 shadow-purple-950/50',
-    olive: 'bg-gradient-to-br from-olive-600 to-olive-900 border-olive-500/50 shadow-olive-900/50',
+    red: 'bg-gradient-to-br from-[#DC143C] to-[#4a0415] border-[#DC143C]/50 shadow-[#DC143C]/30',
+    blue: 'bg-gradient-to-br from-[#6495ED] to-blue-950 border-[#6495ED]/50 shadow-blue-950/40',
+    green: 'bg-gradient-to-br from-[#08542f] to-[#043821] border-[#08542f]/50 shadow-[#043821]/40',
+    yellow: 'bg-gradient-to-br from-[#ffa700] to-[#7a3f00] border-[#ffa700]/50 shadow-[#ffa700]/30',
+    purple: 'bg-gradient-to-br from-[#B9D9EB] to-[#B9D9EB] border-[#B9D9EB]/50 shadow-[#F0F8FF]/20',
+    olive: 'bg-gradient-to-br from-[#6B8E23] to-[#2f3e12] border-[#6B8E23]/50 shadow-olive-900/40',
   }
   return colors[color] || 'bg-slate-800'
 }

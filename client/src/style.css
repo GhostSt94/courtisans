@@ -62,3 +62,7 @@ body {
 .card-shine:hover::after {
   transform: rotate(45deg) translate(20%, 20%);
 }
+
+.text-outline-black {
+  -webkit-text-stroke: .2px black;
+}

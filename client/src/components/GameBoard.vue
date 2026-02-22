@@ -330,7 +330,7 @@ const canDiscard = (card, targetType, targetPlayerId) => {
   const az = assassinZone.value;
   if (!az) return false;
   if (card.id === az.playedCardId) return false;
-  
+
   if (az.targetType === 'table' || az.targetType === 'mystery') return targetType === 'table';
   if (az.targetType === 'self') return targetType === 'player' && targetPlayerId === store.myId;
   if (az.targetType === 'other' || az.targetType === 'other_mystery') return targetType === 'player' && targetPlayerId === az.targetPlayerId;
@@ -345,24 +345,24 @@ const onBoardCardClick = (targetType, targetPlayerId, card) => {
 
 const cardColorClass = (color) => {
   const colors = {
-    red: 'bg-gradient-to-br from-red-800 to-red-950 border-red-600/50',
-    blue: 'bg-gradient-to-br from-sky-700 to-blue-950 border-sky-500/40',
-    green: 'bg-gradient-to-br from-emerald-700 to-emerald-950 border-emerald-500/40',
-    yellow: 'bg-gradient-to-br from-amber-600 to-amber-950 border-amber-400/40',
-    purple: 'bg-gradient-to-br from-violet-700 to-indigo-950 border-violet-500/40',
-      olive: 'bg-gradient-to-br from-olive-600 to-olive-900 border-olive-400/40',
+    red: 'bg-gradient-to-br from-[#DC143C] to-[#4a0415] border-[#DC143C]/50',
+    blue: 'bg-gradient-to-br from-[#6495ED] to-[#0b1f4b] border-[#6495ED]/40',
+    green: 'bg-gradient-to-br from-[#08542f] to-[#043821] border-[#08542f]/40',
+    yellow: 'bg-gradient-to-br from-[#ffa700] to-[#7a3f00] border-[#ffa700]/80',
+    purple: 'bg-gradient-to-br from-[#B9D9EB] to-[#B9D9EB] border-[#B9D9EB]/40',
+      olive: 'bg-gradient-to-br from-[#6B8E23] to-[#2f3e12]/80 border-olive-400/40',
   }
   return colors[color] || 'bg-slate-700'
 }
 
 const carpetColorClass = (family) => {
   const colors = {
-    "Lion": "bg-red-700 border-red-500/50",
-    "Fish": "bg-sky-700 border-sky-500/50",
-    "Bird": "bg-emerald-700 border-emerald-500/50",
-    "Sun": "bg-amber-600 border-amber-500/50",
-    "Moon": "bg-violet-700 border-violet-500/50",
-    "Star": "bg-olive-700 border-olive-500/50",
+    "Lion": "bg-[#DC143C] border-[#4a0415]/50",
+    "Fish": "bg-[#6495ED] border-[#6495ED]/50",
+    "Bird": "bg-[#08542f] border-[#043821]/50",
+    "Sun": "bg-[#ffa700] border-[#7a3f00]/50",
+    "Moon": "bg-[#B9D9EB] border-[#B9D9EB]/50",
+    "Star": "bg-[#6B8E23] border-[#2f3e12]/50",
     "Mystery": "bg-slate-800 border-slate-600/50 bg-[radial-gradient(circle,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4px_4px]"
   }
   return colors[family] || 'bg-slate-600'
