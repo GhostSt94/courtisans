@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/socket.io': {
-        target: 'http://localhost:3000',
+        target: 'https://courtisans-e6kg.onrender.com',
         ws: true
       }
     }
