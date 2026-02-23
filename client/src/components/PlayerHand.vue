@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between gap-4 w-full mx-auto h-full min-h-[220px]">
+  <div class="flex items-center justify-between gap-6 w-full max-w-6xl mx-auto h-full min-h-[220px]">
     <!-- Left Section: Missions -->
     <div class="w-56 flex flex-col gap-3 h-full justify-center">
       <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-1">Secret Missions</h3>
@@ -16,9 +16,9 @@
           ]">
             <div class="flex justify-between items-center">
               <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest truncate">{{ mission.name }}</span>
-              <span class="text-[9px] font-black text-slate-500">+{{ mission.points }}</span>
+              <span class="text-[9px] font-black text-slate-500">+{{ mission.points }} points</span>
             </div>
-            <p class="text-[9px] text-slate-400 font-bold leading-tight uppercase tracking-wider line-clamp-2">{{ mission.description }}</p>
+            <p class="text-[10px] text-slate-400 font-bold leading-tight uppercase tracking-wider">{{ mission.description }}</p>
             <div v-if="mission.completed !== undefined" class="mt-1 flex justify-end">
               <span v-if="mission.completed" class="text-[8px] font-black text-green-500 uppercase flex items-center gap-1">✓ Completed</span>
               <span v-else class="text-[8px] font-black text-red-500 uppercase flex items-center gap-1">✗ Failed</span>
@@ -32,11 +32,8 @@
     <!-- Middle Section: Cards & Turn Status -->
     <div class="flex-grow flex flex-col items-center justify-center gap-4">
       <div v-if="isMyTurn" class="flex flex-col items-center gap-1">
-        <div v-if="store.game.turnActions.pendingAssassin" class="flex flex-col items-center gap-2">
-          <p class="text-sm text-red-500 font-black uppercase tracking-[0.2em] animate-pulse">🗡️ Assassin Deployed</p>
-          <button @click="store.skipDiscard()" class="px-4 py-1.5 bg-slate-800 border border-slate-700 rounded-full text-[10px] text-slate-400 uppercase font-black hover:text-white hover:bg-slate-700 transition-all cursor-pointer">Spare Card (Skip)</button>
-        </div>
-        <div v-else class="flex flex-col items-center">
+        <!-- Minimal Turn Header -->
+        <div class="flex flex-col items-center">
           <p class="text-[10px] text-amber-500 uppercase font-black tracking-[0.4em] mb-1">Your Turn</p>
           <div class="flex gap-4 opacity-40 text-[8px] font-black uppercase tracking-widest">
             <span :class="{'line-through !opacity-100 !text-slate-500': store.game.turnActions.playedSelf}">To Domain</span>
@@ -46,8 +43,8 @@
         </div>
       </div>
 
-      <!-- Hand cards (Original Size & Design) -->
-      <div v-if="!store.game.turnActions.pendingAssassin" class="flex items-center justify-center gap-4">
+      <!-- Hand cards -->
+      <div class="flex items-center justify-center gap-4 min-h-[200px]">
         <div
           v-for="card in store.game.myHand"
           :key="card.id"
@@ -82,7 +79,7 @@
                   </div>
               </div>
                 <div>
-                  <span class="text-[10px] font-black text-grey-300/40 uppercase tracking-[0.2em] mt-1">{{ card.family }}</span>
+                  <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">{{ card.family }}</span>
                 </div>
             </div>
 
@@ -96,58 +93,80 @@
             </div>
           </div>
         </div>
+        <p v-if="store.game.myHand.length === 0 && isMyTurn" class="text-xs text-slate-600 uppercase font-black tracking-widest animate-pulse">Waiting for server...</p>
       </div>
     </div>
 
-    <!-- Right Section: Actions -->
-    <div class="w-64 flex flex-col gap-3 h-full justify-center">
-      <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-1 text-right">Court Actions</h3>
+    <!-- Right Section: Actions Grouped -->
+    <div class="w-80 flex flex-col gap-3 h-full justify-center">
+      <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-1">Available Actions</h3>
 
-      <div v-if="selectedCard && !store.game.turnActions.pendingAssassin" class="flex flex-col gap-3 animate-in fade-in slide-in-from-right-4 duration-300">
-        <!-- Self / Carpet Buttons -->
-        <div class="grid grid-cols-2 gap-2">
-          <button v-if="!store.game.turnActions.playedSelf" @click="playCard('self')" class="px-3 py-3 bg-slate-900 border border-emerald-500/40 hover:bg-emerald-950 text-emerald-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-            🏰 My Domain
+      <!-- Group: Assassin Actions -->
+      <div v-if="store.game.turnActions.pendingAssassin && isMyTurn" class="flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
+        <div class="flex flex-col gap-2 p-4 bg-red-500/5 border border-red-500/20 rounded-2xl">
+          <span class="text-[8px] font-black text-red-500 uppercase tracking-[0.2em] px-1">Assassin's Strike</span>
+          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-relaxed px-1">
+            The Assassin has been deployed. Select a card on the board to eliminate it, or spare the court.
+          </p>
+          <button @click="store.skipDiscard()" class="w-full mt-2 px-4 py-2.5 bg-slate-900 border border-slate-700 hover:border-white/40 text-white font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-3 cursor-pointer group/act">
+            <span class="text-base group-hover/act:scale-110 transition-transform">🕊️</span> Mercy (Skip Kill)
           </button>
+        </div>
+      </div>
 
-          <template v-if="!store.game.turnActions.playedTable">
-            <button v-if="selectedCard.role !== 'Spy'" @click="playCard('table', null, 'positive')" class="px-3 py-3 bg-slate-900 border border-green-500/40 hover:bg-green-950 text-green-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-              📈 Favor
-            </button>
-            <button v-if="selectedCard.role !== 'Spy'" @click="playCard('table', null, 'negative')" class="px-3 py-3 bg-slate-900 border border-red-500/40 hover:bg-red-950 text-red-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-              📉 Disgrace
-            </button>
+      <!-- Normal Card Actions -->
+      <div v-else-if="selectedCard && isMyTurn" class="flex flex-col gap-4 overflow-y-auto max-h-[200px] custom-scrollbar pr-2 animate-in fade-in slide-in-from-right-4 duration-300">
 
-            <button v-if="selectedCard.role === 'Spy'" @click="playCard('mystery', null, 'positive')" class="col-span-1 px-3 py-3 bg-slate-900 border border-amber-500/40 hover:bg-amber-950 text-amber-500 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 border-dashed">
-              ❓ Hidden+
-            </button>
-            <button v-if="selectedCard.role === 'Spy'" @click="playCard('mystery', null, 'negative')" class="col-span-1 px-3 py-3 bg-slate-900 border border-amber-500/40 hover:bg-amber-950 text-amber-500 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95 border-dashed">
-              ❓ Hidden-
-            </button>
-          </template>
+        <!-- Group 1: For You -->
+        <div v-if="!store.game.turnActions.playedSelf" class="flex flex-col gap-1.5">
+          <span class="text-[8px] font-black text-emerald-500/60 uppercase tracking-[0.2em] px-1">Your Estate</span>
+          <button @click="playCard('self')" class="w-full px-4 py-2.5 bg-slate-900 border border-emerald-500/40 hover:bg-emerald-950 text-emerald-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center gap-3 cursor-pointer group/act">
+            <span class="text-base group-hover/act:scale-110 transition-transform">🏰</span> Recruit to Domain
+          </button>
         </div>
 
-        <!-- Opponent selection -->
-        <div v-if="!store.game.turnActions.playedOther" class="flex flex-col gap-2 mt-1">
-          <div class="flex items-center gap-2">
-            <div class="h-px bg-slate-800 flex-grow"></div>
-            <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Send to Court</span>
-            <div class="h-px bg-slate-800 flex-grow"></div>
+        <!-- Group 2: For the Carpet -->
+        <div v-if="!store.game.turnActions.playedTable" class="flex flex-col gap-1.5">
+          <span class="text-[8px] font-black text-amber-500/60 uppercase tracking-[0.2em] px-1">Royal Carpet</span>
+          <div class="grid grid-cols-2 gap-2">
+            <template v-if="selectedCard.role !== 'Spy'">
+              <button @click="playCard('table', null, 'positive')" class="px-3 py-2.5 bg-slate-900 border border-green-500/40 hover:bg-green-950 text-green-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer group/act">
+                <span class="group-hover/act:scale-110 transition-transform">📈</span> Esteem
+              </button>
+              <button @click="playCard('table', null, 'negative')" class="px-3 py-2.5 bg-slate-900 border border-red-500/40 hover:bg-red-950 text-red-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer group/act">
+                <span class="group-hover/act:scale-110 transition-transform">📉</span> Disgrace
+              </button>
+            </template>
+            <template v-else>
+              <button @click="playCard('mystery', null, 'positive')" class="col-span-1 px-3 py-2.5 bg-slate-900 border border-amber-500/40 hover:bg-amber-950 text-green-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer border-dashed group/act">
+                <span class="group-hover/act:scale-110 transition-transform">🎭</span> Secret Esteem
+              </button>
+              <button @click="playCard('mystery', null, 'negative')" class="col-span-1 px-3 py-2.5 bg-slate-900 border border-amber-500/40 hover:bg-amber-950 text-red-400 font-black rounded-xl text-[10px] uppercase transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer border-dashed group/act">
+                <span class="group-hover/act:scale-110 transition-transform">🎭</span> Secret Disgrace
+              </button>
+            </template>
           </div>
+        </div>
+
+        <!-- Group 3: For Opponents -->
+        <div v-if="!store.game.turnActions.playedOther" class="flex flex-col gap-1.5">
+          <span class="text-[8px] font-black text-red-500/60 uppercase tracking-[0.2em] px-1">Rival Estates</span>
           <div class="grid grid-cols-2 gap-2">
             <button
               v-for="opponent in otherPlayers"
               :key="opponent.id"
               @click="playCard(selectedCard.role === 'Spy' ? 'other_mystery' : 'other', opponent.id)"
-              class="px-3 py-2 bg-slate-800 hover:bg-red-900/50 border border-slate-700 hover:border-red-500/40 text-slate-300 font-black rounded-xl text-[9px] uppercase transition-all truncate cursor-pointer active:scale-95"
+              class="px-3 py-2 bg-slate-800 hover:bg-red-900/50 border border-slate-700 hover:border-red-500/40 text-slate-300 font-black rounded-xl text-[9px] uppercase transition-all truncate cursor-pointer group/act"
             >
-              👤 {{ opponent.username }}
+              <span class="opacity-50 mr-1 group-hover/act:opacity-100">{{ selectedCard.role === 'Spy' ? '🎭' : '👤' }}</span> {{ opponent.username }}
             </button>
           </div>
         </div>
+
       </div>
-      <div v-else-if="isMyTurn" class="bg-slate-950/30 border border-slate-800/50 rounded-2xl p-4 text-center">
-        <p class="text-[9px] text-slate-600 uppercase font-black italic tracking-widest">Select a card from your hand to influence the court</p>
+      <!-- Placeholder/Empty state -->
+      <div v-else-if="isMyTurn" class="bg-slate-950/30 border border-slate-800/50 rounded-2xl p-6 text-center">
+        <p class="text-[10px] text-slate-600 uppercase font-black italic tracking-widest leading-relaxed">Select a card to reveal its strategic options</p>
       </div>
     </div>
   </div>
@@ -193,7 +212,7 @@ const roleIcon = (role) => {
     Spy: '🎭',
     Assassin: '🗡️',
     Guard: '🛡️',
-    Courtesan: '',
+    Courtesan: '📜',
   }
   return icons[role] || ''
 }
