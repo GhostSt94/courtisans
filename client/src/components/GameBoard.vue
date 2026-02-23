@@ -297,7 +297,7 @@
 
     <!-- Bottom Interaction: Hand -->
     <footer class="p-4 bg-gradient-to-t from-slate-950 to-transparent shrink-0">
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-6xl mx-auto">
         <PlayerHand />
       </div>
     </footer>
