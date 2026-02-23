@@ -120,22 +120,93 @@
         </div>
       </transition>
 
-      <!-- Winner Overlay (Same as before) -->
+      <!-- The Reveal Overlay (Non-blocking Banner) -->
+      <transition enter-active-class="transition duration-700 ease-out" enter-from-class="-translate-y-full opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-500 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="-translate-y-full opacity-0">
+        <div v-if="store.game.revealing" class="fixed top-20 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center pointer-events-none">
+           <div class="flex items-center gap-6 px-10 py-4 bg-slate-900/90 border border-amber-500/30 rounded-full shadow-[0_0_50px_rgba(245,158,11,0.2)] backdrop-blur-md">
+              <div class="text-3xl animate-pulse">🎭</div>
+              <div class="flex flex-col">
+                <h2 class="text-lg font-black text-white uppercase tracking-[0.3em]">The Reveal</h2>
+                <p class="text-[10px] text-amber-500 font-bold uppercase tracking-widest animate-bounce">Flipping Spies & Calculating Favor...</p>
+              </div>
+           </div>
+        </div>
+      </transition>
+
+      <!-- Show Scores Button (when modal hidden) -->
+      <button
+        v-if="store.game.gameOver && !showWinnerModal"
+        @click="showWinnerModal = true"
+        class="fixed top-24 right-8 z-40 px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-full uppercase transition-all shadow-2xl flex items-center gap-2 animate-bounce border border-amber-400/30"
+      >
+        <span>📊</span> Show Scores
+      </button>
+
+      <!-- Winner Overlay (Improved) -->
       <transition enter-active-class="transition duration-1000" enter-from-class="opacity-0" enter-to-class="opacity-100">
-        <div v-if="store.game.gameOver" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl">
-           <!-- ... winner content (abbreviated for brevity, keep existing logic) ... -->
-           <div class="flex flex-col items-center gap-10 p-16 bg-slate-900 border border-amber-500/30 rounded-[3rem] shadow-[0_0_100px_rgba(245,158,11,0.2)]">
-              <div class="text-8xl animate-bounce">👑</div>
-              <h2 class="text-6xl font-black text-white uppercase">{{ winnerName }} Wins</h2>
-              <div class="grid grid-cols-2 gap-4 w-full">
-                <div v-for="p in sortedPlayers" :key="p.id" class="flex justify-between p-4 bg-slate-950 rounded-xl border border-slate-800">
-                  <span class="font-bold">{{ p.username }}</span>
-                  <span class="text-amber-500 font-mono">{{ p.score }}</span>
+        <div v-if="showWinnerModal && store.game.gameOver" class="fixed inset-0 z-[100] flex flex-col items-center justify-start bg-slate-950/95 backdrop-blur-2xl p-6 overflow-y-auto pt-20">
+           <div class="flex flex-col items-center gap-8 p-12 bg-slate-900 border border-amber-500/20 rounded-[3rem] shadow-[0_0_100px_rgba(245,158,11,0.15)] max-w-3xl w-full relative animate-in fade-in zoom-in duration-500 mb-12">
+
+              <!-- Close button -->
+              <button @click="showWinnerModal = false" class="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors bg-slate-800/50 p-2 rounded-full border border-slate-700 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+
+              <div class="flex flex-col items-center gap-4">
+                <div class="relative">
+                  <div class="absolute -inset-4 bg-amber-500/20 rounded-full blur-xl animate-pulse"></div>
+                  <div class="text-7xl relative">👑</div>
+                </div>
+                <div class="text-center">
+                  <h3 class="text-[10px] font-black text-amber-500 uppercase tracking-[0.5em] mb-1">Court Verdict</h3>
+                  <h2 class="text-5xl font-black text-white uppercase tracking-tighter leading-none">{{ winnerName }} Wins</h2>
                 </div>
               </div>
-              <button @click="store.quitGame()" class="px-12 py-4 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-full uppercase transition-all shadow-2xl">
-                Return to Court
-              </button>
+
+              <div class="w-full flex flex-col gap-3 max-h-[45vh] overflow-y-auto custom-scrollbar p-2">
+                <div v-for="(p, index) in sortedPlayers" :key="p.id"
+                  class="group relative"
+                  :style="{ animationDelay: (index * 150) + 'ms' }"
+                >
+                  <div :class="[
+                    'flex justify-between items-center p-5 rounded-[1.5rem] border transition-all duration-500',
+                    p.id === store.game.winnerId ? 'bg-gradient-to-r from-amber-500/20 to-amber-500/5 border-amber-500/50 scale-[1.02] shadow-xl' : 'bg-slate-950/50 border-slate-800/50 hover:bg-slate-800/80 hover:border-slate-700'
+                  ]">
+                    <div class="flex items-center gap-4">
+                      <div :class="[
+                        'w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border shadow-inner',
+                        p.id === store.game.winnerId ? 'bg-amber-500 text-slate-900 border-amber-300' : 'bg-slate-900 text-slate-400 border-slate-800'
+                      ]">
+                        {{ index + 1 }}
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-black text-lg text-white group-hover:translate-x-1 transition-transform">{{ p.username }}</span>
+                        <div class="flex gap-2">
+                           <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">{{ getCompletedMissionsCount(p) }} Missions Done</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-6">
+                       <div class="flex flex-col items-end">
+                          <span class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Total Influence</span>
+                          <span :class="['font-mono text-4xl font-black leading-none', p.id === store.game.winnerId ? 'text-amber-500' : 'text-slate-300']">
+                            {{ p.score }}
+                          </span>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-4 w-full pt-4">
+                <button @click="showWinnerModal = false" class="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs border border-slate-700 cursor-pointer active:scale-95">
+                  Analyze Board
+                </button>
+                <button @click="store.quitGame()" class="flex-1 py-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-black rounded-2xl uppercase transition-all shadow-xl shadow-amber-900/20 tracking-[0.2em] text-xs cursor-pointer active:scale-95">
+                  Return to Court
+                </button>
+              </div>
            </div>
         </div>
       </transition>
@@ -165,22 +236,32 @@
                     @click="onBoardCardClick('table', null, card)"
                     :class="[
                       'w-9 h-12 rounded border shadow-lg flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative transform hover:-translate-y-1',
-                      (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
+                      (family === 'Mystery' && !store.game.gameOver && !store.game.revealing) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
                       canDiscard(card, 'table', null) ? 'cursor-pointer ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10 scale-110' : ''
                     ]">
-                    {{ (family === 'Mystery' && !store.game.gameOver) ? '?' : card.family.charAt(0) }}
-                    <span v-if="!(family === 'Mystery' && !store.game.gameOver)" class="absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
+                    {{ (family === 'Mystery' && !store.game.gameOver && !store.game.revealing) ? '?' : card.family.charAt(0) }}
+                    <span v-if="!(family === 'Mystery' && !store.game.gameOver && !store.game.revealing)" class="absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
                       {{ roleIcon(card.role) }}
                     </span>
                   </div>
                 </div>
 
                 <!-- Family Title -->
-                <div class="h-10 shrink-0 relative flex items-center justify-center z-10">
+                <div class="h-10 shrink-0 relative flex flex-col items-center justify-center z-10">
                   <div :class="['absolute inset-0.5 rounded border opacity-80', carpetColorClass(family)]"></div>
                   <span class="relative z-10 text-[8px] font-black text-white uppercase tracking-widest drop-shadow-md">
                     {{ family === 'Mystery' ? '???' : family }}
                   </span>
+                  <!-- Status Indicator -->
+                  <div v-if="store.game.familyStatuses && store.game.familyStatuses[family] !== undefined"
+                       class="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                    <div v-if="store.game.familyStatuses[family] === 1" class="bg-green-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-lg border border-white/20 uppercase tracking-tighter">
+                      Esteemed
+                    </div>
+                    <div v-else-if="store.game.familyStatuses[family] === -1" class="bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-lg border border-white/20 uppercase tracking-tighter">
+                      Disgraced
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Disgrace -->
@@ -189,11 +270,11 @@
                     @click="onBoardCardClick('table', null, card)"
                     :class="[
                       'w-9 h-12 rounded border shadow-lg flex items-center justify-center text-[10px] font-black text-white shrink-0 transition-all relative transform hover:translate-y-1',
-                      (family === 'Mystery' && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
+                      (family === 'Mystery' && !store.game.gameOver && !store.game.revealing) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
                       canDiscard(card, 'table', null) ? 'cursor-pointer ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10 scale-110' : ''
                     ]">
-                    {{ (family === 'Mystery' && !store.game.gameOver) ? '?' : card.family.charAt(0) }}
-                    <span v-if="!(family === 'Mystery' && !store.game.gameOver)" class="absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
+                    {{ (family === 'Mystery' && !store.game.gameOver && !store.game.revealing) ? '?' : card.family.charAt(0) }}
+                    <span v-if="!(family === 'Mystery' && !store.game.gameOver && !store.game.revealing)" class="absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
                       {{ roleIcon(card.role) }}
                     </span>
                   </div>
@@ -224,18 +305,38 @@
 </template>
 
 <script setup>
-import { computed, defineComponent, h, ref } from "vue"
+import { computed, defineComponent, h, ref, watch } from "vue"
 import { useGameStore } from "../stores/gameStore"
 import PlayerHand from "./PlayerHand.vue"
 
 const store = useGameStore()
 const showQuitConfirm = ref(false)
+const showWinnerModal = ref(false)
+
+// Watch for game over to show modal
+watch(() => store.game?.gameOver, (isOver) => {
+  if (isOver) showWinnerModal.value = true
+})
 
 // Split players for side columns
 const leftPlayers = computed(() => store.game.players.slice(0, 2))
 const rightPlayers = computed(() => store.game.players.slice(2, 5))
 
-//
+// Helper for score breakdown
+const getMissionScore = (player) => {
+  if (!player.missions) return 0;
+  return player.missions.reduce((sum, m) => m.completed ? sum + m.points : sum, 0);
+}
+
+const getDomainScore = (player) => {
+  return player.score - getMissionScore(player);
+}
+
+const getCompletedMissionsCount = (player) => {
+  if (!player.missions) return 0;
+  return player.missions.filter(m => m.completed).length;
+}
+
 const sumValue = (array)=>{
     return array.reduce((total, obj) => {
         return total + (obj.value ?? 0);
@@ -273,7 +374,7 @@ const PlayerEstateCard = defineComponent({
            ])
         ]),
         h('div', { class: 'flex flex-col items-end' }, [
-           h('span', { class: 'text-amber-500 font-mono text-sm font-black' }, props.player.score || '')
+           h('span', { class: 'text-amber-500 font-mono text-sm font-black' }, props.player.score || (props.player.score === 0 ? '0' : ''))
         ])
       ]),
       // Domain
@@ -284,12 +385,12 @@ const PlayerEstateCard = defineComponent({
               onClick: () => onBoardCardClick('player', props.player.id, card),
               class: [
                 'w-8 h-11 rounded border shadow-md flex items-center justify-center text-[8px] font-black text-white shrink-0 transition-all relative',
-                (card.isMystery && props.player.id !== store.myId && !store.game.gameOver) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
+                (card.isMystery && props.player.id !== store.myId && !store.game.gameOver && !store.game.revealing) ? 'bg-slate-800 border-slate-700 text-slate-500' : cardColorClass(card.color),
                 canDiscard(card, 'player', props.player.id) ? 'cursor-pointer ring-2 ring-red-500 z-10 scale-110' : ''
               ]
             }, [
-              (card.isMystery && props.player.id !== store.myId && !store.game.gameOver) ? '?' : card.family.charAt(0),
-              !((card.isMystery && props.player.id !== store.myId && !store.game.gameOver)) ? h('span', { class: 'absolute -top-1 -right-1 bg-slate-950 rounded-full w-3 h-3 flex items-center justify-center text-[6px] border border-slate-700' }, roleIcon(card.role)) : null
+              (card.isMystery && props.player.id !== store.myId && !store.game.gameOver && !store.game.revealing) ? '?' : card.family.charAt(0),
+              !((card.isMystery && props.player.id !== store.myId && !store.game.gameOver && !store.game.revealing)) ? h('span', { class: 'absolute -top-1 -right-1 bg-slate-950 rounded-full w-3 h-3 flex items-center justify-center text-[6px] border border-slate-700' }, roleIcon(card.role)) : null
             ]))
       )
     ])
@@ -379,5 +480,14 @@ const carpetColorClass = (family) => {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(245, 158, 11, 0.2);
   border-radius: 4px;
+}
+
+@keyframes staggered-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: staggered-fade-in 0.6s ease-out forwards;
 }
 </style>

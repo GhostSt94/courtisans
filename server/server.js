@@ -33,6 +33,7 @@ io.on("connection", (socket) => {
   // Create game
   socket.on("createGame", ({ userId, username }) => {
     const game = gameManager.createGame(socket.id, userId, username);
+    game.onUpdate = () => broadcastGameState(game);
     socket.join(game.id);
     socket.emit("gameUpdated", game.getStateForPlayer(socket.id));
   });
@@ -46,6 +47,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    game.onUpdate = () => broadcastGameState(game);
     socket.join(game.id);
     broadcastGameState(game);
   });
@@ -54,6 +56,7 @@ io.on("connection", (socket) => {
   socket.on("reconnectGame", ({ gameId, userId }) => {
     const game = gameManager.getGame(gameId);
     if (game && game.updatePlayerSocket(userId, socket.id)) {
+      game.onUpdate = () => broadcastGameState(game);
       socket.join(game.id);
       socket.emit("gameUpdated", game.getStateForPlayer(socket.id));
       broadcastGameState(game);

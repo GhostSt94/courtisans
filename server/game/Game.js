@@ -28,6 +28,8 @@ class Game {
       playedTable: false,
     };
 
+    this.revealing = false;
+    this.onUpdate = null;
     this.addPlayer(hostId, userId, hostUsername);
   }
 
@@ -261,19 +263,17 @@ class Game {
                       }
 
                       nextTurn() {
-
-        this.currentTurnIndex = (this.currentTurnIndex + 1) % this.players.length;
-        // Check if game should end
+    this.currentTurnIndex = (this.currentTurnIndex + 1) % this.players.length;
+    // Check if game should end
     if (this.deck.cards.length === 0) {
-      this.calculateScores();
+      this.revealTable();
     } else {
       this.startPlayerTurn();
     }
   }
 
-  calculateScores() {
-    this.gameOver = true;
-    this.started = false;
+  revealTable() {
+    this.revealing = true;
 
     // 1. Reveal and move Mystery Table cards to their respective families
     ['positive', 'negative'].forEach(pos => {
@@ -283,6 +283,23 @@ class Game {
       });
       this.table.Mystery[pos] = [];
     });
+
+    // 2. Reveal player mystery cards (Spies)
+    this.players.forEach(p => {
+      p.domain.forEach(c => c.isMystery = false);
+    });
+
+    // Wait for animation delay then calculate final scores
+    setTimeout(() => {
+      this.calculateScores();
+      if (this.onUpdate) this.onUpdate();
+    }, 3000); // 3 seconds for client to animate/show reveal
+  }
+
+  calculateScores() {
+    this.gameOver = true;
+    this.started = false;
+    this.revealing = false;
 
     // 2. Determine family statuses (Esteemed/Disgraced)
     const familyStatuses = {};
@@ -343,6 +360,7 @@ class Game {
       winnerId: this.winnerId || null,
       familyStatuses: this.familyStatuses || null,
       deckCount: this.deck ? this.deck.cards.length : 0,
+      revealing: this.revealing,
       turnActions: {
         playedSelf: this.turnState.playedSelf,
         playedOther: this.turnState.playedOther,

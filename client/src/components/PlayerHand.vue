@@ -1,5 +1,37 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="relative flex flex-col gap-6">
+    <!-- Missions (Side Panel) -->
+    <div v-if="myMissions.length" class="fixed right-8 bottom-32 flex flex-col items-end gap-3 pointer-events-none z-30">
+      <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-1">Secret Missions</h3>
+      <div 
+        v-for="mission in myMissions" 
+        :key="mission.id"
+        class="pointer-events-auto group relative transition-all hover:translate-x-[-8px]"
+      >
+        <div class="absolute -inset-0.5 bg-amber-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+        <div :class="[
+          'relative px-5 py-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl flex flex-col gap-1.5 min-w-[220px] shadow-2xl transition-all',
+          mission.completed === true ? 'border-green-500/50 bg-green-950/20' : 
+          mission.completed === false ? 'border-red-500/20 opacity-60' : ''
+        ]">
+          <div class="flex justify-between items-center">
+            <span class="text-[11px] font-black text-amber-500 uppercase tracking-widest">{{ mission.name }}</span>
+            <span class="text-[10px] font-black text-slate-500">+{{ mission.points }}</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-bold leading-tight uppercase tracking-wider">{{ mission.description }}</p>
+          
+          <div v-if="mission.completed !== undefined" class="mt-1 border-t border-white/5 pt-2 flex justify-end">
+            <span v-if="mission.completed" class="text-[9px] font-black text-green-500 uppercase tracking-widest flex items-center gap-1">
+              Completed ✓
+            </span>
+            <span v-else class="text-[9px] font-black text-red-500 uppercase tracking-widest flex items-center gap-1">
+              Failed ✗
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div v-if="isMyTurn" class="flex flex-col gap-2">
       <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] text-center">Your Turn</h3>
       <div v-if="store.game.turnActions.pendingAssassin" class="flex flex-col items-center gap-4 py-2 animate-in fade-in zoom-in duration-500">
@@ -24,39 +56,6 @@
         <span :class="{'line-through opacity-20': store.game.turnActions.playedOther}">1 to Opponent</span>
         <span :class="{'line-through opacity-20': store.game.turnActions.playedTable}">1 to Carpet</span>
       </p>
-    </div>
-
-    <!-- Missions -->
-    <div v-if="myMissions.length" class="flex flex-col items-center gap-2">
-      <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Secret Missions</h3>
-      <div class="flex gap-4">
-        <div
-          v-for="mission in myMissions"
-          :key="mission.id"
-          class="relative group"
-        >
-          <div class="absolute -inset-0.5 bg-amber-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-          <div :class="[
-            'relative px-4 py-2 bg-slate-900/80 border border-slate-800 rounded-xl flex flex-col gap-1 min-w-[180px] transition-all',
-            mission.completed === true ? 'border-green-500/50 bg-green-950/20' : 
-            mission.completed === false ? 'border-red-500/20 opacity-60' : ''
-          ]">
-            <div class="flex justify-between items-center">
-              <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest">{{ mission.name }}</span>
-              <span class="text-[9px] font-bold text-slate-500">+{{ mission.points }} PTS</span>
-            </div>
-            <p class="text-[9px] text-slate-400 font-medium leading-tight uppercase tracking-wider">{{ mission.description }}</p>
-            <div v-if="mission.completed !== undefined" class="mt-1 self-end">
-              <span v-if="mission.completed" class="text-[8px] font-black text-green-500 uppercase tracking-widest flex items-center gap-1">
-                Completed 🗸
-              </span>
-              <span v-else class="text-[8px] font-black text-red-500 uppercase tracking-widest flex items-center gap-1">
-                Failed 🗙
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Hand cards -->
