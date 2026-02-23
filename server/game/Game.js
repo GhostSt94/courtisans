@@ -5,6 +5,7 @@ const Missions = require("./Missions");
 class Game {
   constructor(id, hostId, userId, hostUsername) {
     this.id = id;
+    this.hostId = hostId;
     this.players = [];
     this.currentTurnIndex = 0;
     this.started = false;
@@ -347,6 +348,7 @@ class Game {
   getPublicState() {
     return {
       id: this.id,
+      hostId: this.hostId,
       players: this.players.map(p => ({
         id: p.id,
         username: p.username,

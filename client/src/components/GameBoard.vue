@@ -240,7 +240,7 @@
                       canDiscard(card, 'table', null) ? 'cursor-pointer ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10 scale-110' : ''
                     ]">
                     {{ (family === 'Mystery' && !store.game.gameOver && !store.game.revealing) ? '?' : card.family.charAt(0) }}
-                    <span v-if="!(family === 'Mystery' && !store.game.gameOver && !store.game.revealing)" class="absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
+                    <span v-if="!(family === 'Mystery' && !store.game.gameOver && !store.game.revealing)" class="cursor-default absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
                       {{ roleIcon(card.role) }}
                     </span>
                   </div>
@@ -274,7 +274,7 @@
                       canDiscard(card, 'table', null) ? 'cursor-pointer ring-2 ring-red-500 ring-offset-2 ring-offset-slate-900 z-10 scale-110' : ''
                     ]">
                     {{ (family === 'Mystery' && !store.game.gameOver && !store.game.revealing) ? '?' : card.family.charAt(0) }}
-                    <span v-if="!(family === 'Mystery' && !store.game.gameOver && !store.game.revealing)" class="absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
+                    <span v-if="!(family === 'Mystery' && !store.game.gameOver && !store.game.revealing)" class="cursor-default absolute -top-1 -right-1 bg-slate-950 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[7px] border border-slate-700 shadow-sm">
                       {{ roleIcon(card.role) }}
                     </span>
                   </div>
@@ -390,7 +390,7 @@ const PlayerEstateCard = defineComponent({
               ]
             }, [
               (card.isMystery && props.player.id !== store.myId && !store.game.gameOver && !store.game.revealing) ? '?' : card.family.charAt(0),
-              !((card.isMystery && props.player.id !== store.myId && !store.game.gameOver && !store.game.revealing)) ? h('span', { class: 'absolute -top-1 -right-1 bg-slate-950 rounded-full w-3 h-3 flex items-center justify-center text-[6px] border border-slate-700' }, roleIcon(card.role)) : null
+              !((card.isMystery && props.player.id !== store.myId && !store.game.gameOver && !store.game.revealing)) ? h('span', { class: 'cursor-default absolute -top-1 -right-1 bg-slate-950 rounded-full w-3 h-3 flex items-center justify-center text-[6px] border border-slate-700' }, roleIcon(card.role)) : null
             ]))
       )
     ])

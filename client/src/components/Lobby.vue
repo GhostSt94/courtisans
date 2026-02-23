@@ -102,13 +102,16 @@
               <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
               <span class="font-bold text-white tracking-wide uppercase text-sm">{{ player.username }}</span>
             </div>
-            <span v-if="player.id === store.myId" class="text-[8px] font-black bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 rounded-full tracking-widest uppercase">Master</span>
+            <div class="flex gap-2">
+              <span v-if="player.id === store.game.hostId" class="text-[8px] font-black bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 rounded-full tracking-widest uppercase">Master</span>
+              <span v-if="player.id === store.myId" class="text-[8px] font-black bg-slate-800 text-slate-400 border border-slate-700 px-3 py-1 rounded-full tracking-widest uppercase">You</span>
+            </div>
           </li>
         </ul>
       </div>
 
             <button
-              v-if="store.game.players[0].id === store.myId"
+              v-if="store.game.hostId === store.myId"
               @click="store.startGame()"
               :disabled="store.game.players.length < 2"
               class="cursor-pointer group relative w-full disabled:opacity-50"
