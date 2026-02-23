@@ -357,12 +357,12 @@ const cardColorClass = (color) => {
 
 const carpetColorClass = (family) => {
   const colors = {
-    "Lion": "bg-[#DC143C] border-[#4a0415]/50",
-    "Fish": "bg-[#6495ED] border-[#6495ED]/50",
-    "Bird": "bg-[#08542f] border-[#043821]/50",
-    "Sun": "bg-[#ffa700] border-[#7a3f00]/50",
-    "Moon": "bg-[#B9D9EB] border-[#B9D9EB]/50",
-    "Star": "bg-[#6B8E23] border-[#2f3e12]/50",
+    "Marrakchis": "bg-[#DC143C] border-[#4a0415]/50",
+    "Rbatis": "bg-[#6495ED] border-[#6495ED]/50",
+    "Rifis": "bg-[#08542f] border-[#043821]/50",
+    "Sahraouis": "bg-[#ffa700] border-[#7a3f00]/50",
+    "Tangaouis": "bg-[#B9D9EB] border-[#B9D9EB]/50",
+    "Chleuhs": "bg-[#6B8E23] border-[#2f3e12]/50",
     "Mystery": "bg-slate-800 border-slate-600/50 bg-[radial-gradient(circle,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4px_4px]"
   }
   return colors[family] || 'bg-slate-600'

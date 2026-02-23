@@ -2,12 +2,12 @@
 class Deck {
   constructor() {
     this.families = [
-      { name: "Lion", color: "red" },
-      { name: "Fish", color: "blue" },
-      { name: "Bird", color: "green" },
-      { name: "Sun", color: "yellow" },
-      { name: "Moon", color: "purple" },
-      { name: "Star", color: "olive" }
+      { name: "Marrakchis", color: "red" },
+      { name: "Rbatis", color: "blue" },
+      { name: "Rifis", color: "green" },
+      { name: "Sahraouis", color: "yellow" },
+      { name: "Tangaouis", color: "purple" },
+      { name: "Chleuhs", color: "olive" }
     ];
     this.cards = this.generateDeck();
     this.shuffle();

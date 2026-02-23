@@ -52,16 +52,18 @@
 
         <!-- Card Content -->
         <div class="relative h-full p-4 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <div class="flex flex-col">
-              <span class="text-4xl font-black font-serif text-white tracking-tighter leading-none text-outline-black">
+          <div class="flex flex-col justify-between items-start">
+            <div class="flex justify-between w-full">
+              <span class="flex-1 text-4xl font-black font-serif text-white tracking-tighter leading-none text-outline-black">
                 {{ card.family.charAt(0) }}
               </span>
-              <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">{{ card.family }}</span>
+                <div :title="roleDescription(card.role)" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner group-hover:scale-110 transition-transform">
+                    <span class="text-xl drop-shadow-lg">{{ roleIcon(card.role) }}</span>
+                </div>
             </div>
-            <div :title="roleDescription(card.role)" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner group-hover:scale-110 transition-transform">
-              <span class="text-xl drop-shadow-lg">{{ roleIcon(card.role) }}</span>
-            </div>
+              <div>
+                <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-1">{{ card.family }}</span>
+              </div>
           </div>
 
           <div class="flex items-center justify-between gap-1 border-t border-white/10 pt-3">

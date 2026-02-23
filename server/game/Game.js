@@ -8,15 +8,15 @@ class Game {
     this.currentTurnIndex = 0;
     this.started = false;
     this.deck = null;
-    
+
     // The Carpet / River structure
     this.table = {
-      "Lion": { positive: [], negative: [] },
-      "Fish": { positive: [], negative: [] },
-      "Bird": { positive: [], negative: [] },
-      "Sun": { positive: [], negative: [] },
-      "Moon": { positive: [], negative: [] },
-      "Star": { positive: [], negative: [] },
+      "Marrakchis": { positive: [], negative: [] },
+      "Rbatis": { positive: [], negative: [] },
+      "Rifis": { positive: [], negative: [] },
+      "Sahraouis": { positive: [], negative: [] },
+      "Tangaouis": { positive: [], negative: [] },
+      "Chleuhs": { positive: [], negative: [] },
       "Mystery": { positive: [], negative: [] }
     };
 
@@ -117,9 +117,9 @@ class Game {
     if (cardIndex === -1) return { success: false, message: "Card not in hand" };
 
         const card = this.turnState.drawnCards[cardIndex];
-    
+
         const isMysteryTarget = (targetType === 'mystery' || targetType === 'other_mystery' || (targetType === 'self' && card.role === 'Spy'));
-    
+
         // Role-specific validations
         if (card.role === "Spy") {
           // Spies MUST be played to a mystery target (domain or table)
@@ -132,7 +132,7 @@ class Game {
             return { success: false, message: "Only Spies can be played mysteriously" };
           }
         }
-    
+
             if (targetType === 'self') {
               if (this.turnState.playedSelf) return { success: false, message: "Already played for yourself" };
               currentPlayer.domain.push({ ...card, isMystery: card.role === 'Spy' });
@@ -156,7 +156,7 @@ class Game {
             else if (targetType === 'table') {
               if (this.turnState.playedTable) return { success: false, message: "Already played on table" };
               if (!position || !['positive', 'negative'].includes(position)) return { success: false, message: "Invalid table position" };
-        
+
               const family = card.family;
               this.table[family][position].push({ ...card, isMystery: false });
               this.turnState.playedTable = true;
@@ -164,14 +164,14 @@ class Game {
             else if (targetType === 'mystery') {
               if (this.turnState.playedTable) return { success: false, message: "Already played on table" };
               if (!position || !['positive', 'negative'].includes(position)) return { success: false, message: "Invalid table position" };
-        
+
               this.table["Mystery"][position].push({ ...card, isMystery: true });
               this.turnState.playedTable = true;
             }
                         else {
                           return { success: false, message: "Invalid target type" };
                         }
-            
+
                         // Handle Assassin discard logic if it was an Assassin
                         if (card.role === "Assassin") {
                           if (this.canDiscardAny(targetType, targetPlayerId, card.id)) {
@@ -181,30 +181,30 @@ class Game {
                             this.turnState.pendingAssassin = false;
                           }
                         }
-            
+
                         this.turnState.drawnCards.splice(cardIndex, 1);
                         if (this.turnState.drawnCards.length === 0 && !this.turnState.pendingAssassin) this.nextTurn();
                         return { success: true };
                       }
-            
+
                       discardCard(playerId, targetType, targetPlayerId, cardId) {
                         if (!this.turnState.pendingAssassin) return { success: false, message: "No assassin played" };
-            
+
                         const currentPlayer = this.getCurrentPlayer();
                         if (currentPlayer.id !== playerId) return { success: false, message: "Not your turn" };
-            
+
                         // Validate Zone
                         const az = this.turnState.assassinZone;
-                        
+
                         if (cardId === az.playedCardId) return { success: false, message: "Cannot discard the Assassin you just played" };
 
                         // Map 'mystery' to 'table' and 'other_mystery' to 'player' for zone comparison
                         const zoneMatch = (az.targetType === 'table' || az.targetType === 'mystery') ? (targetType === 'table') :
                                          (az.targetType === 'self') ? (targetType === 'player' && targetPlayerId === playerId) :
                                          (az.targetType === 'other' || az.targetType === 'other_mystery') ? (targetType === 'player' && targetPlayerId === az.targetPlayerId) : false;
-            
+
                         if (!zoneMatch) return { success: false, message: "Must discard from the same zone where Assassin was played" };
-            
+
                         if (targetType === 'table') {
                           for (const fam in this.table) {
                             for (const pos of ['positive', 'negative']) {
@@ -230,23 +230,23 @@ class Game {
                             return { success: true };
                           }
                         }
-            
+
                         return { success: false, message: "Target card not found" };
                       }
-            
+
                       skipDiscard(playerId) {
                         if (!this.turnState.pendingAssassin) return { success: false, message: "No assassin played" };
-            
+
                         const currentPlayer = this.getCurrentPlayer();
                         if (currentPlayer.id !== playerId) return { success: false, message: "Not your turn" };
-            
+
                         this.turnState.pendingAssassin = false;
                         if (this.turnState.drawnCards.length === 0) this.nextTurn();
                         return { success: true };
                       }
-            
+
                       nextTurn() {
-            
+
         this.currentTurnIndex = (this.currentTurnIndex + 1) % this.players.length;
         // Check if game should end
     if (this.deck.cards.length === 0) {
@@ -271,12 +271,12 @@ class Game {
 
     // 2. Determine family statuses (Esteemed/Disgraced)
     const familyStatuses = {};
-    const families = ["Lion", "Fish", "Bird", "Sun", "Moon", "Star"];
-    
+    const families = ["Marrakchis", "Rbatis", "Rifis", "Sahraouis", "Tangaouis", "Star"];
+
     families.forEach(name => {
       const posCount = this.table[name].positive.length;
       const negCount = this.table[name].negative.length;
-      
+
       if (posCount > negCount) familyStatuses[name] = 1; // Esteemed
       else if (posCount < negCount) familyStatuses[name] = -1; // Disgraced
       else familyStatuses[name] = 0; // Neutral
@@ -329,7 +329,7 @@ class Game {
   getStateForPlayer(playerId) {
     const isMyTurn = this.getCurrentPlayer()?.id === playerId;
     const publicState = this.getPublicState();
-    
+
     // Obfuscate mystery cards in players' domains for others ONLY if not game over
     const players = publicState.players.map(p => ({
       ...p,
