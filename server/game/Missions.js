@@ -1,108 +1,115 @@
 const Missions = [
+  // --- Tangaouis (Purple/Maritime) ---
   {
     id: 1,
     name: "Northern Supremacy",
-    description: "Have more Tangaouis cards than any other player.",
+    description: "Have more Tangaouis cards in your domain than any other player.",
     points: 3,
-    check: (player, allPlayers, tableStatuses) => {
+    check: (player, allPlayers) => {
       const myCount = player.domain.filter(c => c.family === "Tangaouis").length;
+      if (myCount === 0) return false;
       return allPlayers.every(p => p.id === player.id || p.domain.filter(c => c.family === "Tangaouis").length < myCount);
     }
   },
   {
     id: 2,
     name: "Port of Influence",
-    description: "Ensure Tangaouis are in the Queen's Favor at the end.",
+    description: "Ensure Tangaouis are Esteemed at the end of the game.",
     points: 3,
     check: (player, allPlayers, tableStatuses) => tableStatuses["Tangaouis"] === 1
   },
   {
     id: 3,
-    name: "Maritime Alliance",
-    description: "Have at least 2 Tangaouis and 2 Rbatis in your domain.",
+    name: "Maritime Trade",
+    description: "Have at least 2 Tangaouis and 1 Noble in your domain.",
     points: 3,
     check: (player) => {
       const tangaouis = player.domain.filter(c => c.family === "Tangaouis").length;
-      const rbatis = player.domain.filter(c => c.family === "Rbatis").length;
-      return tangaouis >= 2 && rbatis >= 2;
+      const nobles = player.domain.filter(c => c.role === "Noble").length;
+      return tangaouis >= 2 && nobles >= 1;
     }
   },
+
+  // --- Sahraouis (Yellow/Desert) ---
   {
     id: 4,
     name: "Desert Dominance",
-    description: "Have at least 4 Sahraouis cards.",
+    description: "Have at least 4 Sahraouis cards in your domain.",
     points: 3,
     check: (player) => player.domain.filter(c => c.family === "Sahraouis").length >= 4
   },
   {
     id: 5,
+    name: "Oasis Protection",
+    description: "Have at least 1 Sahraouis and 2 Guards in your domain.",
+    points: 3,
+    check: (player) => {
+      const sahraouis = player.domain.some(c => c.family === "Sahraouis");
+      const guards = player.domain.filter(c => c.role === "Guard").length;
+      return sahraouis && guards >= 2;
+    }
+  },
+  {
+    id: 6,
     name: "Sandstorm",
-    description: "Make sure at least one opponent has no Sahraouis.",
+    description: "Make sure at least one opponent has no Sahraouis in their domain.",
     points: 3,
     check: (player, allPlayers) => {
       return allPlayers.some(p => p.id !== player.id && p.domain.filter(c => c.family === "Sahraouis").length === 0);
     }
   },
-  {
-    id: 6,
-    name: "Endurance of the Dunes",
-    description: "Have Sahraouis in Favor while Rifis are in Disgrace.",
-    points: 3,
-    check: (player, allPlayers, tableStatuses) => tableStatuses["Sahraouis"] === 1 && tableStatuses["Rifis"] === -1
-  },
+
+  // --- Rifis (Green/Mountain) ---
   {
     id: 7,
-    name: "Mountain Pride",
-    description: "Have exactly 3 Rifis cards.",
+    name: "Mountain Bastion",
+    description: "Have at least 3 Rifis cards in your domain.",
     points: 3,
-    check: (player) => player.domain.filter(c => c.family === "Rifis").length === 3
+    check: (player) => player.domain.filter(c => c.family === "Rifis").length >= 3
   },
   {
     id: 8,
     name: "Unbreakable North",
-    description: "Have Rifis and Tangaouis both in your domain, but more Rifis.",
+    description: "Have both Rifis and Tangaouis in your domain, with more Rifis than Tangaouis.",
     points: 3,
     check: (player) => {
       const rifis = player.domain.filter(c => c.family === "Rifis").length;
       const tangaouis = player.domain.filter(c => c.family === "Tangaouis").length;
-      return rifis > 0 && tangaouis > 0 && rifis > tangaouis;
+      return rifis > tangaouis && tangaouis > 0;
     }
   },
   {
     id: 9,
     name: "Resistance",
-    description: "Ensure Rifis are not in Disgrace at game end.",
+    description: "Ensure Rifis are NOT Disgraced at game end.",
     points: 3,
     check: (player, allPlayers, tableStatuses) => tableStatuses["Rifis"] !== -1
   },
+
+  // --- Rbatis (Blue/Capital) ---
   {
     id: 10,
     name: "Capital Control",
-    description: "Have at least 1 card of 4 different families (political balance).",
+    description: "Have cards from at least 4 different families in your domain.",
     points: 3,
-    check: (player) => {
-      const families = new Set(player.domain.map(c => c.family));
-      return families.size >= 4;
-    }
+    check: (player) => new Set(player.domain.map(c => c.family)).size >= 4
   },
   {
     id: 11,
     name: "Royal Influence",
-    description: "Have Rbatis in the highest Favor position.",
+    description: "Have Rbatis in the highest Favor position on the Carpet.",
     points: 3,
     check: (player, allPlayers, tableStatuses, table) => {
-      const getDiff = (fam) => table[fam].positive.length - table[fam].negative.length;
+      const getDiff = (fam) => (table[fam]?.positive?.length || 0) - (table[fam]?.negative?.length || 0);
       const rbatisDiff = getDiff("Rbatis");
-      for (const fam in table) {
-        if (fam !== "Mystery" && fam !== "Rbatis" && getDiff(fam) >= rbatisDiff) return false;
-      }
-      return true;
+      const families = ["Marrakchis", "Rifis", "Sahraouis", "Tangaouis", "Chleuhs"];
+      return families.every(fam => getDiff(fam) < rbatisDiff);
     }
   },
   {
     id: 12,
     name: "Political Web",
-    description: "Have more Rbatis than Marrakchis.",
+    description: "Have more Rbatis than Marrakchis in your domain.",
     points: 3,
     check: (player) => {
       const rbatis = player.domain.filter(c => c.family === "Rbatis").length;
@@ -110,42 +117,50 @@ const Missions = [
       return rbatis > marrakchis;
     }
   },
+
+  // --- Marrakchis (Red/Market) ---
   {
     id: 13,
     name: "Red City Prestige",
-    description: "Have at least 4 Marrakchis.",
+    description: "Have at least 3 Marrakchis cards and 1 Noble in your domain.",
     points: 3,
-    check: (player) => player.domain.filter(c => c.family === "Marrakchis").length >= 4
+    check: (player) => {
+      const marrakchis = player.domain.filter(c => c.family === "Marrakchis").length;
+      const nobles = player.domain.filter(c => c.role === "Noble").length;
+      return marrakchis >= 3 && nobles >= 1;
+    }
   },
   {
     id: 14,
     name: "Market Manipulator",
-    description: "Have Marrakchis in Favor and Sahraouis in Disgrace.",
+    description: "Have Marrakchis Esteemed and Sahraouis Disgraced.",
     points: 3,
     check: (player, allPlayers, tableStatuses) => tableStatuses["Marrakchis"] === 1 && tableStatuses["Sahraouis"] === -1
   },
   {
     id: 15,
     name: "Court Intrigue",
-    description: "Have exactly 2 Marrakchis and 2 Rbatis.",
+    description: "Have at least 2 Marrakchis and 2 Rbatis in your domain.",
     points: 3,
     check: (player) => {
       const marrakchis = player.domain.filter(c => c.family === "Marrakchis").length;
       const rbatis = player.domain.filter(c => c.family === "Rbatis").length;
-      return marrakchis === 2 && rbatis === 2;
+      return marrakchis >= 2 && rbatis >= 2;
     }
   },
+
+  // --- Chleuhs (Olive/Traders) ---
   {
     id: 16,
     name: "Souss Strategy",
-    description: "Have exactly 3 Chleuhs.",
+    description: "Have at least 3 Chleuhs cards in your domain.",
     points: 3,
-    check: (player) => player.domain.filter(c => c.family === "Chleuhs").length === 3
+    check: (player) => player.domain.filter(c => c.family === "Chleuhs").length >= 3
   },
   {
     id: 17,
     name: "Mountain Alliance",
-    description: "Have both Chleuhs and Rifis, with equal numbers.",
+    description: "Have both Chleuhs and Rifis in your domain, with an equal number of each.",
     points: 3,
     check: (player) => {
       const chleuhs = player.domain.filter(c => c.family === "Chleuhs").length;
@@ -156,31 +171,25 @@ const Missions = [
   {
     id: 18,
     name: "Silent Traders",
-    description: "Have Chleuhs in Favor while Tangaouis are not.",
+    description: "Have Chleuhs Esteemed while Tangaouis are NOT.",
     points: 3,
     check: (player, allPlayers, tableStatuses) => tableStatuses["Chleuhs"] === 1 && tableStatuses["Tangaouis"] !== 1
   },
+
+  // --- Advanced / General ---
   {
     id: 19,
     name: "Royal Balance",
+    description: "Have at least 1 card of each of the 6 families in your domain.",
     points: 4,
-    description: "Have exactly 1 card of each family.",
-    check: (player) => {
-      const families = ["Marrakchis", "Rbatis", "Rifis", "Sahraouis", "Tangaouis", "Chleuhs"];
-      return families.every(f => player.domain.filter(c => c.family === f).length === 1);
-    }
+    check: (player) => new Set(player.domain.map(c => c.family)).size === 6
   },
   {
     id: 20,
-    name: "Northern Empire",
-    points: 4,
-    description: "Have Tangaouis + Rifis + Rbatis all in your domain and none in Disgrace.",
-    check: (player, allPlayers, tableStatuses) => {
-      const families = ["Tangaouis", "Rifis", "Rbatis"];
-      const hasAll = families.every(f => player.domain.some(c => c.family === f));
-      const noneInDisgrace = families.every(f => tableStatuses[f] !== -1);
-      return hasAll && noneInDisgrace;
-    }
+    name: "Iron Wall",
+    description: "Have at least 3 Guard cards in your domain.",
+    points: 3,
+    check: (player) => player.domain.filter(c => c.role === "Guard").length >= 3
   }
 ];
 

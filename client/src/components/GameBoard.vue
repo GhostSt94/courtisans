@@ -230,8 +230,8 @@
               <div v-for="(data, family) in store.game.table" :key="family" class="flex flex-col bg-slate-900/40 relative group h-full">
                 <!-- Esteem -->
                 <div class="flex-1 p-2 flex flex-col items-center gap-1.5 overflow-y-auto custom-scrollbar relative pt-7">
-                    <h6 v-if="family === 'Mystery'" class="uppercase text-gray-400/40 font-black text-[9px] absolute top-1 right-[50%] translate-x-[50%]">Glory</h6>
-                    <h6 v-else class="uppercase text-gray-400/40 font-black text-[9px] absolute top-1 right-[50%] translate-x-[50%]" :class="isDisgrace(data.positive, data.negative) === -1 ? '!text-green-600/40' : ''">Glory ({{sumValue(data.positive)}})</h6>
+                    <h6 v-if="family === 'Mystery'" class="uppercase text-gray-400/40 font-black text-[9px] absolute top-1 right-[50%] translate-x-[50%]">Esteem</h6>
+                    <h6 v-else class="uppercase text-gray-400/40 font-black text-[9px] absolute top-1 right-[50%] translate-x-[50%]" :class="isDisgrace(data.positive, data.negative) === -1 ? '!text-green-600/40' : ''">Esteem ({{sumValue(data.positive)}})</h6>
                   <div v-for="card in data.positive" :key="card.id"
                     @click="onBoardCardClick('table', null, card)"
                     :class="[
