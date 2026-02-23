@@ -1,5 +1,6 @@
 // game/Game.js
 const Deck = require("./Deck");
+const Missions = require("./Missions");
 
 class Game {
   constructor(id, hostId, userId, hostUsername) {
@@ -37,6 +38,7 @@ class Game {
       userId: userId,
       username: username || `Player ${this.players.length + 1}`,
       domain: [], // Space in front where players play cards
+      missions: [], // Mission cards
       score: 0,
     });
   }
@@ -63,6 +65,19 @@ class Game {
 
     this.started = true;
     this.deck = new Deck();
+
+    // Mission Deck
+    const missionDeck = [...Missions];
+    // Shuffle missionDeck
+    for (let i = missionDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [missionDeck[i], missionDeck[j]] = [missionDeck[j], missionDeck[i]];
+    }
+
+    // Deal 2 missions to each player
+    this.players.forEach(player => {
+      player.missions = [missionDeck.pop(), missionDeck.pop()];
+    });
 
     // Scale deck based on player count
     const deckSizes = { 2: 60, 3: 72, 4: 84, 5: 90 };
@@ -271,7 +286,7 @@ class Game {
 
     // 2. Determine family statuses (Esteemed/Disgraced)
     const familyStatuses = {};
-    const families = ["Marrakchis", "Rbatis", "Rifis", "Sahraouis", "Tangaouis", "Star"];
+    const families = ["Marrakchis", "Rbatis", "Rifis", "Sahraouis", "Tangaouis", "Chleuhs"];
 
     families.forEach(name => {
       const posCount = this.table[name].positive.length;
@@ -287,11 +302,23 @@ class Game {
     // 3. Tally player scores
     this.players.forEach(player => {
       let score = 0;
+      // Domain cards
       player.domain.forEach(card => {
         const status = familyStatuses[card.family] || 0;
         const weight = card.role === "Noble" ? 2 : 1;
         score += status * weight;
       });
+
+      // Missions
+      player.missions.forEach(mission => {
+        if (mission.check(player, this.players, familyStatuses, this.table)) {
+          mission.completed = true;
+          score += mission.points;
+        } else {
+          mission.completed = false;
+        }
+      });
+
       player.score = score;
     });
 
@@ -331,15 +358,19 @@ class Game {
     const publicState = this.getPublicState();
 
     // Obfuscate mystery cards in players' domains for others ONLY if not game over
-    const players = publicState.players.map(p => ({
-      ...p,
-      domain: p.domain.map(card => {
-        if (card.isMystery && p.id !== playerId && !publicState.gameOver) {
-          return { id: card.id, isMystery: true }; // Hide details
-        }
-        return card;
-      })
-    }));
+    const players = publicState.players.map(p => {
+      const isMe = p.id === playerId;
+      return {
+        ...p,
+        missions: (isMe || publicState.gameOver) ? this.players.find(realP => realP.id === p.id).missions : [],
+        domain: p.domain.map(card => {
+          if (card.isMystery && !isMe && !publicState.gameOver) {
+            return { id: card.id, isMystery: true }; // Hide details
+          }
+          return card;
+        })
+      };
+    });
 
     return {
       ...publicState,

@@ -26,6 +26,39 @@
       </p>
     </div>
 
+    <!-- Missions -->
+    <div v-if="myMissions.length" class="flex flex-col items-center gap-2">
+      <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Secret Missions</h3>
+      <div class="flex gap-4">
+        <div
+          v-for="mission in myMissions"
+          :key="mission.id"
+          class="relative group"
+        >
+          <div class="absolute -inset-0.5 bg-amber-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+          <div :class="[
+            'relative px-4 py-2 bg-slate-900/80 border border-slate-800 rounded-xl flex flex-col gap-1 min-w-[180px] transition-all',
+            mission.completed === true ? 'border-green-500/50 bg-green-950/20' : 
+            mission.completed === false ? 'border-red-500/20 opacity-60' : ''
+          ]">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest">{{ mission.name }}</span>
+              <span class="text-[9px] font-bold text-slate-500">+{{ mission.points }} PTS</span>
+            </div>
+            <p class="text-[9px] text-slate-400 font-medium leading-tight uppercase tracking-wider">{{ mission.description }}</p>
+            <div v-if="mission.completed !== undefined" class="mt-1 self-end">
+              <span v-if="mission.completed" class="text-[8px] font-black text-green-500 uppercase tracking-widest flex items-center gap-1">
+                Completed 🗸
+              </span>
+              <span v-else class="text-[8px] font-black text-red-500 uppercase tracking-widest flex items-center gap-1">
+                Failed 🗙
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Hand cards -->
     <div v-if="!store.game.turnActions.pendingAssassin" class="flex flex-wrap items-center justify-center gap-4 py-2">
       <div
@@ -161,6 +194,11 @@ const selectedCard = ref(null)
 
 const isMyTurn = computed(() => store.game.currentTurn === store.myId)
 const otherPlayers = computed(() => store.game.players.filter(p => p.id !== store.myId))
+
+const myMissions = computed(() => {
+  const me = store.game.players.find(p => p.id === store.myId)
+  return me ? me.missions : []
+})
 
 const selectCard = (card) => {
   if (selectedCard.value?.id === card.id) {
